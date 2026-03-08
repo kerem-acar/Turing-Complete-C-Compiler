@@ -27,7 +27,7 @@ std::vector<std::string> Lex(const std::string& file_path) {
         std::string number;
         unsigned int j = i;
 
-        while (j < line.size() && std::isalpha(line[j])) {
+        while (j < line.size() && std::isdigit(line[j])) {
           number += line[j];
           j++;
         }
