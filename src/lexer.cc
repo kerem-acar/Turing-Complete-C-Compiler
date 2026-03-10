@@ -2,63 +2,66 @@
 #include "token.hpp"
 
 
-const std::map<std::string, Token> kKeywordMap = {
-  {"return", Token::ReturnKeyword},
-  {"int", Token::IntKeyword}
-};
 
-const std::map<char, Token> kSyntaxMap = {
-  {'{', Token::OpenBracket},
-  {'}', Token::CloseBracket},
-  {'(', Token::OpenParen},
-  {')', Token::CloseParen},
-  {';', Token::Semicolon}
-};
 
-std::vector<Token> Lex(const std::string& file_path) {
+bool Lex(const std::string& file_path, std::vector<Token>& result) {
   std::ifstream ifs{file_path};
 
-  std::string line;
-  std::vector<Token> result;
+  if (!ifs) {
+    return false;
+  }
+  const std::unordered_map<std::string, Token> keywordMap = {
+    {"return", Token::ReturnKeyword},
+    {"int", Token::IntKeyword}
+  };
+
+  const std::unordered_map<char, Token> singleCharMap = {
+    {'{', Token::OpenBracket},
+    {'}', Token::CloseBracket},
+    {'(', Token::OpenParen},
+    {')', Token::CloseParen},
+    {';', Token::Semicolon}
+  };
 
 
-  while (std::getline(ifs, line)) {
-    for (unsigned int i = 0; i < line.size(); ++i) {
-      if (std::isspace(line[i])) {
-        continue;
-      }
-      if (kSyntaxMap.contains(line[i])) {
-        result.push_back(kSyntaxMap.at(line[i]));
-        continue;
-      }
-      if (std::isdigit(line[i])) {
-        std::string number;
-        unsigned int j = i;
+  std::string content((std::istreambuf_iterator<char>(ifs)), std::istreambuf_iterator<char>());
 
-        while (j < line.size() && std::isdigit(line[j])) {
-          number += line[j];
-          j++;
-        }
-        i = j - 1;
-        result.push_back(Token::IntegerLiteral);
-        continue;
+
+
+  for (unsigned int i = 0; i < content.size(); ++i) {
+    if (std::isspace(content[i])) {
+      continue;
+    }
+    if (singleCharMap.contains(content[i])) {
+      result.push_back(singleCharMap.at(content[i]));
+      continue;
+    }
+    if (std::isdigit(content[i])) {
+      std::string number;
+
+      while (i < content.size() && std::isdigit(content[i])) {
+        number += content[i];
+        i++;
       }
-      if (std::isalpha(line[i])) {
-        std::string word;
-        unsigned int j = i;
-        while (j < line.size() && std::isalpha(line[j])) {
-          word += line[j];
-          j++;
-        }
-        i = j - 1;
-        if (kKeywordMap.contains(word)) {
-          result.push_back(kKeywordMap.at(word));
-        } else {
-          result.push_back(Token::Identifier);
-        }
-        continue;
+      i--;
+      result.push_back(Token::IntegerLiteral);
+      continue;
+    }
+    if (std::isalpha(content[i])) {
+      std::string word;
+      while (i < content.size() && std::isalpha(content[i])) {
+        word += content[i];
+        i++;
       }
+      i--;
+      if (keywordMap.contains(word)) {
+        result.push_back(keywordMap.at(word));
+      } else {
+        result.push_back(Token::Identifier);
+      }
+      continue;
     }
   }
-  return result;
+  return true;
 }
+

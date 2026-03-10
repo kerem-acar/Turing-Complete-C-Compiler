@@ -7,9 +7,8 @@
 #include <iostream>
 #include <string>
 #include <vector>
-#include <set>
-#include <map>
+#include <unordered_map>
 
-std::vector<Token> Lex(const std::string& file_path);
+bool Lex(const std::string& file_path, std::vector<Token>& result);
 
 #endif
