@@ -1,26 +1,34 @@
 #include "lexer.hpp"
+#include "token.hpp"
 
-std::vector<std::string> Lex(const std::string& file_path) {
+
+const std::map<std::string, Token> kKeywordMap = {
+  {"return", Token::ReturnKeyword},
+  {"int", Token::IntKeyword}
+};
+
+const std::map<char, Token> kSyntaxMap = {
+  {'{', Token::OpenBracket},
+  {'}', Token::CloseBracket},
+  {'(', Token::OpenParen},
+  {')', Token::CloseParen},
+  {';', Token::Semicolon}
+};
+
+std::vector<Token> Lex(const std::string& file_path) {
   std::ifstream ifs{file_path};
 
-  if (!ifs) {
-    throw std::invalid_argument("File path is invalid");
-  }
-
   std::string line;
-  std::vector<std::string> result;
+  std::vector<Token> result;
 
-  std::set<char> valid_characters = {'{', '}', '(', ')', ';'};
 
   while (std::getline(ifs, line)) {
     for (unsigned int i = 0; i < line.size(); ++i) {
       if (std::isspace(line[i])) {
         continue;
       }
-      if (valid_characters.contains(line[i])) {
-        std::string character;
-        character += line[i];
-        result.push_back(character);
+      if (kSyntaxMap.contains(line[i])) {
+        result.push_back(kSyntaxMap.at(line[i]));
         continue;
       }
       if (std::isdigit(line[i])) {
@@ -32,7 +40,7 @@ std::vector<std::string> Lex(const std::string& file_path) {
           j++;
         }
         i = j - 1;
-        result.push_back(number);
+        result.push_back(Token::IntegerLiteral);
         continue;
       }
       if (std::isalpha(line[i])) {
@@ -43,8 +51,10 @@ std::vector<std::string> Lex(const std::string& file_path) {
           j++;
         }
         i = j - 1;
-        if (word == "main" || word == "return" || word == "int") {
-          result.push_back(word);
+        if (kKeywordMap.contains(word)) {
+          result.push_back(kKeywordMap.at(word));
+        } else {
+          result.push_back(Token::Identifier);
         }
         continue;
       }

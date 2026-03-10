@@ -1,0 +1,1 @@
+clang++ -std=c++20 -I includes main.cc -o exec.exe
