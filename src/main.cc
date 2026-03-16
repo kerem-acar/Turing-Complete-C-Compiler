@@ -1,5 +1,3 @@
 #include "lexer.cc"
 
-int main() { 
-    return 0; 
-}
+int main() { return 0; }

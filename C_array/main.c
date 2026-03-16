@@ -1,16 +1,16 @@
 #include "array.c"
 
 int main() {
-    //Example usage
-    IntArray* myArray = initalizeIntArray(3);
+  // Example usage
+  IntArray *arr = initialize_int_array(3);
 
-    setArrayIndex(myArray, 0, 5);
-    setArrayIndex(myArray, 1, 2);
-    setArrayIndex(myArray, 2, 9);
+  set_array_index(arr, 0, 5);
+  set_array_index(arr, 1, 2);
+  set_array_index(arr, 2, 9);
 
-    pushBack(myArray, 11);
+  push_back(arr, 11);
 
-    deleteArray(myArray);
-    
-    return 0;
+  delete_array(&arr);
+
+  return 0;
 }

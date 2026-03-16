@@ -1,64 +1,56 @@
 #include <stdlib.h>
+#include <assert.h>
 
 typedef struct {
-    int* array;
-    int capacity;
+  int *array;
+  int capacity;
 } IntArray;
 
+IntArray *initialize_int_array(int capacity) {
+  IntArray *arr = malloc(sizeof(IntArray));
+  
+  assert(capacity > 0);
 
+  arr->array = malloc(capacity * sizeof(int));
+  arr->capacity = capacity;
 
-IntArray* initalizeIntArray(int capacity) {
-    IntArray* myArray = malloc(sizeof(IntArray));
-    myArray->array = NULL;
-    myArray->capacity = 0;
-    if (capacity > 0) {
-        myArray->array = malloc(capacity * sizeof(int));
-        myArray->capacity = capacity;
-    }
-    return myArray;
+  return arr;
 }
 
+void set_array_index(IntArray *arr, int index, int val) {
+  assert(arr != NULL);
+  assert(arr->array != NULL);
+  assert(index >= 0 && index < arr->capacity);
 
-
-
-void setArrayIndex(IntArray* myArray, int index, int val) {
-    int cap = myArray->capacity;
-
-    if (myArray->array != NULL && index < cap && index >= 0) {
-        myArray->array[index] = val;
-    }
+  arr->array[index] = val;
+  
 }
 
+void push_back(IntArray *arr, int val) {
+  assert(arr != NULL);
+  assert(arr->array != NULL);
+  int *tmp = malloc((arr->capacity * 2) * sizeof(int));
 
+  for (int i = 0; i < arr->capacity; ++i) {
+    tmp[i] = arr->array[i];
+  }
 
-void pushBack(IntArray* myArray, int val) {
-    IntArray* tmp = initalizeIntArray(myArray->capacity + 1);
+  tmp[arr->capacity] = val;
 
-    for (int i = 0; i < myArray->capacity; ++i) {
-        setArrayIndex(tmp, i, myArray->array[i]);
-    }
+  free(arr->array);
 
-    setArrayIndex(tmp, myArray->capacity, val);
+  arr->array = tmp;
+  arr->capacity *= 2;
 
-    free(myArray->array);
-    myArray->array = NULL;
-    
-    myArray->array = tmp->array;
-    myArray->capacity = tmp->capacity;
-
-    tmp->array = NULL;
-    free(tmp);
+  tmp = NULL;
 }
 
+void delete_array(IntArray **arr) {
+  assert((*arr) != NULL);
+  assert((*arr)->array != NULL);
 
-
-void deleteArray(IntArray* myArray) {
-    if (myArray != NULL) {
-        if (myArray->array != NULL) {
-            free(myArray->array);
-            myArray->array = NULL;
-        }
-        free(myArray);
-        myArray = NULL;
-    }   
+  free((*arr)->array);
+  (*arr)->array = NULL;
+  free((*arr));
+  (*arr) = NULL;
 }

@@ -1,32 +1,24 @@
 #include "lexer.hpp"
 #include "token.hpp"
 
-
-
-
-bool Lex(const std::string& file_path, std::vector<Token>& result) {
+bool Lex(const std::string &file_path, std::vector<Token> &result) {
   std::ifstream ifs{file_path};
 
   if (!ifs) {
     return false;
   }
   const std::unordered_map<std::string, Token> keywordMap = {
-    {"return", Token::ReturnKeyword},
-    {"int", Token::IntKeyword}
-  };
+      {"return", Token::ReturnKeyword}, {"int", Token::IntKeyword}};
 
   const std::unordered_map<char, Token> singleCharMap = {
-    {'{', Token::OpenBracket},
-    {'}', Token::CloseBracket},
-    {'(', Token::OpenParen},
-    {')', Token::CloseParen},
-    {';', Token::Semicolon}
-  };
+      {'{', Token::OpenBracket},
+      {'}', Token::CloseBracket},
+      {'(', Token::OpenParen},
+      {')', Token::CloseParen},
+      {';', Token::Semicolon}};
 
-
-  std::string content((std::istreambuf_iterator<char>(ifs)), std::istreambuf_iterator<char>());
-
-
+  std::string content((std::istreambuf_iterator<char>(ifs)),
+                      std::istreambuf_iterator<char>());
 
   for (unsigned int i = 0; i < content.size(); ++i) {
     if (std::isspace(content[i])) {
@@ -64,4 +56,3 @@ bool Lex(const std::string& file_path, std::vector<Token>& result) {
   }
   return true;
 }
-

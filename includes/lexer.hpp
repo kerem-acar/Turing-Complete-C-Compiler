@@ -6,9 +6,9 @@
 #include <fstream>
 #include <iostream>
 #include <string>
-#include <vector>
 #include <unordered_map>
+#include <vector>
 
-bool Lex(const std::string& file_path, std::vector<Token>& result);
+bool Lex(const std::string &file_path, std::vector<Token> &result);
 
 #endif

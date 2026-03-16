@@ -1,0 +1,1 @@
+clang-format -i src/*.cc includes/*.hpp C_array/*.c
