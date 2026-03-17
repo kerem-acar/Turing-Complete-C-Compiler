@@ -1,1 +1,1 @@
-clang++ -std=c++20 -I includes ./src/main.cc -o exec.exe
+clang /lexer/tests.c -o exec.exe
