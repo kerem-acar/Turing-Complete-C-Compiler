@@ -4,9 +4,9 @@
 #include <ctype.h>
 
 int lex(const char *file_name, IntArray *result) {
-  const char *file_contents = read_file(file_name);
+  const char *src = read_file(file_name);
 
-  if (file_contents == NULL) {
+  if (src == NULL) {
     return 0;
   }
 
@@ -25,26 +25,26 @@ int lex(const char *file_name, IntArray *result) {
   StrMap_insert(&char_map, "}", CloseBracket);
   StrMap_insert(&char_map, ";", Semicolon);
 
-  while (*file_contents != '\0') {
-    if (isspace(*file_contents)) {
-      file_contents++;
+  while (*src) {
+    if (isspace(*src)) {
+      src++;
       continue;
     }
-    if (isdigit(*file_contents)) {
-      while ((*file_contents) != '\0' && isdigit(*file_contents)) {
-        file_contents++;
+    if (isdigit(*src)) {
+      while (*src && isdigit(*src)) {
+        src++;
       }
       push_back(result, IntegerLiteral);
       continue;
     }
-    if (isalpha(*file_contents)) {
+    if (isalpha(*src)) {
       char word[256];
       int word_len = 0;
-      while ((*file_contents) != '\0' && isalpha(*file_contents) &&
+      while (*src && isalpha(*src) &&
              word_len < 255) {
-        word[word_len] = (*file_contents);
+        word[word_len] = (*src);
         word_len++;
-        file_contents++;
+        src++;
       }
       word[word_len] = '\0';
 
@@ -60,7 +60,7 @@ int lex(const char *file_name, IntArray *result) {
 
     char word[2];
 
-    word[0] = (*file_contents);
+    word[0] = (*src);
     word[1] = '\0';
 
     FindRes res = StrMap_find(&char_map, word);
@@ -69,7 +69,7 @@ int lex(const char *file_name, IntArray *result) {
     } else {
       push_back(result, Unknown);
     }
-    file_contents++;
+    src++;
   }
   return 1;
 }
