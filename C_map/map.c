@@ -4,7 +4,7 @@
 #include <stdlib.h>
 #include <string.h>
 
-typedef enum Token {
+typedef enum TokenType {
   OpenBracket,
   CloseBracket,
   OpenParen,
@@ -15,11 +15,11 @@ typedef enum Token {
   Identifier,
   IntegerLiteral,
   Unknown
-} Token;
+} TokenType;
 
 typedef struct StrMapEntry {
   char *key;
-  Token val;
+  TokenType val;
 } StrMapEntry;
 
 typedef struct StrMap {
@@ -49,7 +49,7 @@ int StrMap_find_idx(StrMap *m, char *key) {
 
 typedef struct FindRes {
   int found;
-  Token val;
+  TokenType val;
 } FindRes;
 
 FindRes StrMap_find(StrMap *m, char *key) {
@@ -65,7 +65,7 @@ FindRes StrMap_find(StrMap *m, char *key) {
 }
 
 
-bool StrMap_insert(StrMap *m, char *key, Token val) {
+bool StrMap_insert(StrMap *m, char *key, TokenType val) {
   int idx = StrMap_find_idx(m, key);
   if (idx == -1) {
     assert(m->size + 1 <= m->capacity);

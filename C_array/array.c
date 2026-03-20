@@ -1,8 +1,9 @@
 #include <stdlib.h>
 #include <assert.h>
+#include "../lexer/lex.c"
 
 typedef struct {
-  int *array;
+  Token *array;
   int capacity;
   int size;
 } IntArray;
@@ -19,7 +20,7 @@ IntArray *initialize_int_array(int capacity) {
   return arr;
 }
 
-void set_array_index(IntArray *arr, int index, int val) {
+void set_array_index(IntArray *arr, int index, Token val) {
   assert(arr != NULL);
   assert(arr->array != NULL);
   assert(index >= 0 && index < arr->capacity);
@@ -28,11 +29,11 @@ void set_array_index(IntArray *arr, int index, int val) {
   arr->size++;
 }
 
-void push_back(IntArray *arr, int val) {
+void push_back(IntArray *arr, Token val) {
   assert(arr != NULL);
   assert(arr->array != NULL);
   if (arr->size == arr->capacity) {
-    int *tmp = malloc((arr->capacity * 2) * sizeof(int));
+    Token *tmp = malloc((arr->capacity * 2) * sizeof(int));
 
     for (int i = 0; i < arr->capacity; ++i) {
       tmp[i] = arr->array[i];

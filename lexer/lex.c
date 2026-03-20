@@ -3,6 +3,13 @@
 #include "read_file.c"
 #include <ctype.h>
 
+typedef struct Token {
+  TokenType type;
+  int literal;
+} Token;
+
+
+
 int lex(const char *file_name, IntArray *result) {
   const char *src = read_file(file_name);
 
@@ -30,14 +37,22 @@ int lex(const char *file_name, IntArray *result) {
       src++;
       continue;
     }
+    Token tok;
     if (isdigit(*src)) {
-      while (*src && isdigit(*src)) {
+      char number[256];
+      int number_len = 0;
+      while (*src && isdigit(*src) && number_len < 255) {
+        number[number_len] = (*src);
+        number_len++;
         src++;
       }
-      push_back(result, IntegerLiteral);
+      tok.type = IntegerLiteral;
+      tok.literal = atoi(number);
+      push_back(result, tok);
       continue;
     }
     if (isalpha(*src)) {
+      tok.literal = -1;
       char word[256];
       int word_len = 0;
       while (*src && isalpha(*src) &&
@@ -51,10 +66,11 @@ int lex(const char *file_name, IntArray *result) {
       FindRes res = StrMap_find(&keyword_map, word);
 
       if (res.found) {
-        push_back(result, res.val);
+        tok.type = res.val;
       } else {
-        push_back(result, Identifier);
+        tok.type = Identifier;
       }
+      push_back(result, tok);
       continue;
     }
 
@@ -65,10 +81,13 @@ int lex(const char *file_name, IntArray *result) {
 
     FindRes res = StrMap_find(&char_map, word);
     if (res.found) {
-      push_back(result, res.val);
+      tok.type = res.val;
+      tok.literal = (*src);
     } else {
-      push_back(result, Unknown);
+      tok.type = Unknown;
+      tok.literal = -1;
     }
+    push_back(result, tok);
     src++;
   }
   return 1;
