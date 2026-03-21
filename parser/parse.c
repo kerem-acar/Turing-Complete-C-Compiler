@@ -1,85 +1,77 @@
+#include "../C_array/array.c"
 #include "ast.c"
-#include "../lexer/lex.c"
 
-Expression parse_expression(IntArray *arr) {
-    assert(arr != NULL);
-    assert(arr->array != NULL);
+int parse_expression(TokenArray *arr, int *i) {
+  if (arr->array[*i].kind != TOK_INTLIT) {
+    return 0;
+  }
 
-    Expression exp;
-
-    for (int i = 0; i < arr->size; i++) {
-        if (arr->array[i].type == IntegerLiteral) {
-            exp.constant = arr->array[i].literal;
-        }
-    }
-
-    return exp;
+  (*i)++;
+  return 1;
 }
 
+int parse_statement(TokenArray *arr, int *i) {
+  if (arr->array[*i].kind != TOK_RETKEY) {
+    return 0;
+  }
 
-Return parse_return(IntArray *arr) {
-    assert(arr != NULL);
-    assert(arr->array != NULL);
+  (*i)++;
 
-    Return ret;
+  if (parse_expression(arr, i) != 1) {
+    return 0;
+  }
 
-    for (int i = 0; i < arr->size; i++) {
-        if (arr->array[i].type == ReturnKeyword) {
-            ret.exp = parse_expression(arr);
-        }
-    }
+  if (arr->array[*i].kind != TOK_SEMICOL) {
+    return 0;
+  }
 
-    return ret;
+  (*i)++;
+
+  return 1;
 }
 
-Statement parse_statement(IntArray *arr) {
-    assert(arr != NULL);
-    assert(arr->array != NULL);
+int parse_function(TokenArray *arr) {
+  int i = 0;
 
-    Statement stat;
+  if (arr->array[i].kind != TOK_INTKEY) {
+    return 0;
+  }
 
-    stat.ret = parse_return(arr);
+  i++;
 
-    return stat;
-}
+  if (arr->array[i].kind != TOK_ID && arr->array[i].literal != "main") {
+    return 0;
+  }
 
-Function parse_function(IntArray *arr) {
-    assert(arr != NULL);
-    assert(arr->array != NULL);
+  i++;
 
-    Function func;
+  if (arr->array[i].kind != TOK_LPAREN) {
+    return 0;
+  }
 
-    func.stat = parse_statement(arr);
-    for (int i = 0; i < arr->size; i++) {
-        if (arr->array[i].type == Identifier) {
-            func.name = "main";
-        }
-    }
+  i++;
 
-    return func;
-}
+  if (arr->array[i].kind != TOK_RPAREN) {
+    return 0;
+  }
 
-FunctionDeclaration parse_function_declaration(IntArray *arr) {
-    assert(arr != NULL);
-    assert(arr->array != NULL);
+  i++;
 
-    FunctionDeclaration func_dec;
-    for (int i = 0; i < arr->size; i++) {
-        if (arr->array[i].type == IntKeyword) {
-            func_dec.func = parse_function(arr);
-        }
-    }
+  if (arr->array[i].kind != TOK_LBRACKET) {
+    return 0;
+  }
 
-    return func_dec;
-}
+  i++;
 
-Program parse_program(IntArray *arr) {
-    assert(arr != NULL);
-    assert(arr->array != NULL);
+  if (parse_statement(arr, &i) != 1) {
+    return 0;
+  }
 
-    Program prog;
+  if (arr->array[i].kind != TOK_RBRACKET) {
+    return 0;
+  }
 
-    prog.func_dec = parse_function_declaration(arr);
+  i++;
 
-    return prog;
+  return 1;
 }

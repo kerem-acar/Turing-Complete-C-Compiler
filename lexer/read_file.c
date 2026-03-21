@@ -8,7 +8,6 @@ const char *read_file(const char *filename) {
     return NULL;
   }
 
-
   fseek(file, 0, SEEK_END);
 
   long size = ftell(file);

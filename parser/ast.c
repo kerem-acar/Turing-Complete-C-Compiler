@@ -1,24 +1,16 @@
-typedef struct Expression {
-    int constant;
-} Expression;
+typedef struct AST_Expression {
+  char *constant;
+} AST_Expression;
 
-typedef struct Return {
-    Expression exp;
-} Return;
+typedef struct AST_Statement {
+  AST_Expression *exp;
+} AST_Statement;
 
-typedef struct Statement {
-    Return ret;
-} Statement;
+typedef struct AST_Function {
+  AST_Statement *body;
+  char *name;
+} AST_Function;
 
-typedef struct Function {
-    Statement stat;
-    char *name;
-} Function;
-
-typedef struct FunctionDeclaration {
-    Function func;
-} FunctionDeclaration;
-
-typedef struct Program {
-    FunctionDeclaration func_dec;
-} Program;
+typedef struct AST_Program {
+  AST_Function *func;
+} AST_Program;

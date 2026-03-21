@@ -3,34 +3,27 @@
 #include "read_file.c"
 #include <ctype.h>
 
-typedef struct Token {
-  TokenType type;
-  int literal;
-} Token;
-
-
-
-int lex(const char *file_name, IntArray *result) {
+int lex(const char *file_name, TokenArray *result) {
   const char *src = read_file(file_name);
 
   if (src == NULL) {
     return 0;
   }
 
-  const StrMap keyword_map;
-  const StrMap char_map;
+  StrMap keyword_map;
+  StrMap char_map;
 
   StrMap_init(&keyword_map, 2);
   StrMap_init(&char_map, 5);
 
-  StrMap_insert(&keyword_map, "return", ReturnKeyword);
-  StrMap_insert(&keyword_map, "int", IntKeyword);
+  StrMap_insert(&keyword_map, "return", TOK_RETKEY);
+  StrMap_insert(&keyword_map, "int", TOK_INTKEY);
 
-  StrMap_insert(&char_map, "(", OpenParen);
-  StrMap_insert(&char_map, ")", CloseParen);
-  StrMap_insert(&char_map, "{", OpenBracket);
-  StrMap_insert(&char_map, "}", CloseBracket);
-  StrMap_insert(&char_map, ";", Semicolon);
+  StrMap_insert(&char_map, "(", TOK_LPAREN);
+  StrMap_insert(&char_map, ")", TOK_RPAREN);
+  StrMap_insert(&char_map, "{", TOK_LBRACKET);
+  StrMap_insert(&char_map, "}", TOK_RBRACKET);
+  StrMap_insert(&char_map, ";", TOK_SEMICOL);
 
   while (*src) {
     if (isspace(*src)) {
@@ -39,24 +32,23 @@ int lex(const char *file_name, IntArray *result) {
     }
     Token tok;
     if (isdigit(*src)) {
-      char number[256];
+      char *number = malloc(sizeof(char) * 256);
       int number_len = 0;
       while (*src && isdigit(*src) && number_len < 255) {
         number[number_len] = (*src);
         number_len++;
         src++;
       }
-      tok.type = IntegerLiteral;
-      tok.literal = atoi(number);
+      number[number_len] = '\0';
+      tok.kind = TOK_INTLIT;
+      tok.literal = number;
       push_back(result, tok);
       continue;
     }
     if (isalpha(*src)) {
-      tok.literal = -1;
-      char word[256];
+      char *word = malloc(sizeof(char) * 256);
       int word_len = 0;
-      while (*src && isalpha(*src) &&
-             word_len < 255) {
+      while (*src && isalpha(*src) && word_len < 255) {
         word[word_len] = (*src);
         word_len++;
         src++;
@@ -66,27 +58,27 @@ int lex(const char *file_name, IntArray *result) {
       FindRes res = StrMap_find(&keyword_map, word);
 
       if (res.found) {
-        tok.type = res.val;
+        tok.kind = res.val;
       } else {
-        tok.type = Identifier;
+        tok.kind = TOK_ID;
       }
+      tok.literal = word;
       push_back(result, tok);
       continue;
     }
 
-    char word[2];
+    char *word = malloc(sizeof(char) * 2);
 
     word[0] = (*src);
     word[1] = '\0';
 
     FindRes res = StrMap_find(&char_map, word);
     if (res.found) {
-      tok.type = res.val;
-      tok.literal = (*src);
+      tok.kind = res.val;
     } else {
-      tok.type = Unknown;
-      tok.literal = -1;
+      tok.kind = TOK_UNK;
     }
+    tok.literal = word;
     push_back(result, tok);
     src++;
   }

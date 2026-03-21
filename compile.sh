@@ -1,1 +1,1 @@
-clang /lexer/tests.c -o exec.exe
+clang /parser/tests.c -o tests.exe

@@ -1,25 +1,13 @@
+#include "../lexer/token.c"
 #include <assert.h>
 #include <stdbool.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
 
-typedef enum TokenType {
-  OpenBracket,
-  CloseBracket,
-  OpenParen,
-  CloseParen,
-  Semicolon,
-  ReturnKeyword,
-  IntKeyword,
-  Identifier,
-  IntegerLiteral,
-  Unknown
-} TokenType;
-
 typedef struct StrMapEntry {
   char *key;
-  TokenType val;
+  TOK val;
 } StrMapEntry;
 
 typedef struct StrMap {
@@ -38,7 +26,7 @@ void StrMap_init(StrMap *m, int cap) {
 }
 
 int StrMap_find_idx(StrMap *m, char *key) {
-    
+
   for (int i = 0; i < m->size; ++i) {
     if (streq(m->data[i].key, key)) {
       return i;
@@ -49,7 +37,7 @@ int StrMap_find_idx(StrMap *m, char *key) {
 
 typedef struct FindRes {
   int found;
-  TokenType val;
+  TOK val;
 } FindRes;
 
 FindRes StrMap_find(StrMap *m, char *key) {
@@ -64,8 +52,7 @@ FindRes StrMap_find(StrMap *m, char *key) {
   return res;
 }
 
-
-bool StrMap_insert(StrMap *m, char *key, TokenType val) {
+bool StrMap_insert(StrMap *m, char *key, TOK val) {
   int idx = StrMap_find_idx(m, key);
   if (idx == -1) {
     assert(m->size + 1 <= m->capacity);
@@ -76,21 +63,3 @@ bool StrMap_insert(StrMap *m, char *key, TokenType val) {
   m->data[idx].val = val;
   return false;
 }
-
-// int main(void) {
-//   StrMap m;
-//   StrMap_init(&m, 2);
-
-//   assert(StrMap_insert(&m, "return", ReturnKeyword));
-//   assert(StrMap_insert(&m, "int", Identifier));
-//   assert(StrMap_insert(&m, "int", IntKeyword) == false);
-
-//   FindRes res;
-//   res = StrMap_find(&m, "return");
-//   assert(res.found);
-//   assert(res.val == ReturnKeyword);
-
-//   res = StrMap_find(&m, "int");
-//   assert(res.found);
-//   assert(res.val == IntKeyword);
-// }
