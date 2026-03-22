@@ -1,8 +1,8 @@
 #pragma once
 
 typedef enum TOK {
-  TOK_LBRACKET,
-  TOK_RBRACKET,
+  TOK_LCURLY,
+  TOK_RCURLY,
   TOK_LPAREN,
   TOK_RPAREN,
   TOK_SEMICOL,

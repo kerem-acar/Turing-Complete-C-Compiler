@@ -1,1 +1,1 @@
-clang-format -i lexer/*.c test_cases/*.c C_map/*.c C_array/*.c parser/*.c
+clang-format -i lexer/*.c test_cases/*.c C_map/*.c C_array/*.c parser/*.c C_stoi/*.c

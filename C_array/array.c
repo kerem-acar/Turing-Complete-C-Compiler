@@ -9,7 +9,7 @@ typedef struct {
   int size;
 } TokenArray;
 
-TokenArray *initialize_int_array(int capacity) {
+TokenArray *initialize_token_array(int capacity) {
   TokenArray *arr = malloc(sizeof(TokenArray));
 
   assert(capacity > 0);

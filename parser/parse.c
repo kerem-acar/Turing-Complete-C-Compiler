@@ -1,77 +1,93 @@
 #include "../C_array/array.c"
 #include "ast.c"
+#include <string.h>
 
-int parse_expression(TokenArray *arr, int *i) {
-  if (arr->array[*i].kind != TOK_INTLIT) {
+typedef struct Parser {
+  TokenArray *arr;
+  int i;
+} Parser;
+
+
+Parser *initialize_parser(TokenArray *arr) {
+  Parser *p = malloc(sizeof(Parser));
+  
+  p->arr = arr;
+  p->i = 0;
+
+  return p;
+}
+
+
+int parse_expression(Parser *p) {
+  if (p->arr->array[p->i].kind != TOK_INTLIT) {
     return 0;
   }
 
-  (*i)++;
+  p->i++;
   return 1;
 }
 
-int parse_statement(TokenArray *arr, int *i) {
-  if (arr->array[*i].kind != TOK_RETKEY) {
+int parse_statement(Parser *p) {
+  if (p->arr->array[p->i].kind != TOK_RETKEY) {
     return 0;
   }
 
-  (*i)++;
+  p->i++;
 
-  if (parse_expression(arr, i) != 1) {
+  if (parse_expression(p) != 1) {
     return 0;
   }
 
-  if (arr->array[*i].kind != TOK_SEMICOL) {
+  if (p->arr->array[p->i].kind != TOK_SEMICOL) {
     return 0;
   }
 
-  (*i)++;
+  p->i++;
 
   return 1;
 }
 
-int parse_function(TokenArray *arr) {
-  int i = 0;
+int parse_function(Parser *p) {
 
-  if (arr->array[i].kind != TOK_INTKEY) {
+  if (p->arr->array[p->i].kind != TOK_INTKEY) {
     return 0;
   }
 
-  i++;
+  p->i++;
 
-  if (arr->array[i].kind != TOK_ID && arr->array[i].literal != "main") {
+  if (p->arr->array[p->i].kind != TOK_ID && strcmp(p->arr->array[p->i].literal, "main") != 0) {
     return 0;
   }
 
-  i++;
+  p->i++;
 
-  if (arr->array[i].kind != TOK_LPAREN) {
+  if (p->arr->array[p->i].kind != TOK_LPAREN) {
     return 0;
   }
 
-  i++;
+  p->i++;
 
-  if (arr->array[i].kind != TOK_RPAREN) {
+  if (p->arr->array[p->i].kind != TOK_RPAREN) {
     return 0;
   }
 
-  i++;
+  p->i++;
 
-  if (arr->array[i].kind != TOK_LBRACKET) {
+  if (p->arr->array[p->i].kind != TOK_LCURLY) {
     return 0;
   }
 
-  i++;
+  p->i++;
 
-  if (parse_statement(arr, &i) != 1) {
+  if (parse_statement(p) != 1) {
     return 0;
   }
 
-  if (arr->array[i].kind != TOK_RBRACKET) {
+  if (p->arr->array[p->i].kind != TOK_RCURLY) {
     return 0;
   }
 
-  i++;
+  p->i++;
 
   return 1;
 }

@@ -3,9 +3,7 @@
 #include "read_file.c"
 #include <ctype.h>
 
-int lex(const char *file_name, TokenArray *result) {
-  const char *src = read_file(file_name);
-
+int lex(const char *src, TokenArray *result) {
   if (src == NULL) {
     return 0;
   }
@@ -21,8 +19,8 @@ int lex(const char *file_name, TokenArray *result) {
 
   StrMap_insert(&char_map, "(", TOK_LPAREN);
   StrMap_insert(&char_map, ")", TOK_RPAREN);
-  StrMap_insert(&char_map, "{", TOK_LBRACKET);
-  StrMap_insert(&char_map, "}", TOK_RBRACKET);
+  StrMap_insert(&char_map, "{", TOK_LCURLY);
+  StrMap_insert(&char_map, "}", TOK_RCURLY);
   StrMap_insert(&char_map, ";", TOK_SEMICOL);
 
   while (*src) {

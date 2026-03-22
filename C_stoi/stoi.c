@@ -1,31 +1,30 @@
-int exponentation(int base, int exponent) {
-    int result = 1;
+#include <assert.h>
+#include <ctype.h>
 
-    for (int i = 0; i < exponent; i++) {
-        result *= base;
+int stoi(char *str, int *out) {
+  assert(str);
+
+  if (*str == '0' && *(str + 1) != '\0') {
+    return 0;
+  }
+
+  int res = 0;
+
+  while (*str) {
+    char c = *str;
+
+    if (!isdigit(c)) {
+      return 0;
     }
 
-    return result;
+    res = res * 10 + (c - '0');
+
+    ++str;
+  }
+
+  assert(out);
+
+  *out = res;
+
+  return 1;
 }
-
-int stoi(char *str) {
-    int str_length = 0;
-
-    while (str[str_length]) {
-        str_length++;
-    }
-
-
-
-    int result = 0;
-    int i = 0;
-
-    while (str_length > 0 && str[i] != '\0') {
-        result += exponentation(10, str_length - 1) * (str[i] - '0');
-        i++;
-        str_length--;
-    }
-
-    return result;
-}
-
