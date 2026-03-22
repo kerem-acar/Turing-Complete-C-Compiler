@@ -7,34 +7,41 @@ typedef struct Parser {
   int i;
 } Parser;
 
-
 Parser *initialize_parser(TokenArray *arr) {
   Parser *p = malloc(sizeof(Parser));
-  
+
   p->arr = arr;
   p->i = 0;
 
   return p;
 }
 
-
-int parse_expression(Parser *p) {
+int parse_expression(Parser *p, AST_Statement *stat) {
   if (p->arr->array[p->i].kind != TOK_INTLIT) {
     return 0;
   }
+
+  AST_Expression *exp = malloc(sizeof(AST_Expression));
+  exp->constant = p->arr->array[p->i].literal;
+
+  stat->exp = exp;
 
   p->i++;
   return 1;
 }
 
-int parse_statement(Parser *p) {
+int parse_statement(Parser *p, AST_Function *func) {
   if (p->arr->array[p->i].kind != TOK_RETKEY) {
     return 0;
   }
 
   p->i++;
 
-  if (parse_expression(p) != 1) {
+  AST_Statement *stat = malloc(sizeof(AST_Statement));
+
+  func->body = stat;
+
+  if (parse_expression(p, stat) != 1) {
     return 0;
   }
 
@@ -47,7 +54,7 @@ int parse_statement(Parser *p) {
   return 1;
 }
 
-int parse_function(Parser *p) {
+int parse_function(Parser *p, AST_Program *prog) {
 
   if (p->arr->array[p->i].kind != TOK_INTKEY) {
     return 0;
@@ -55,9 +62,16 @@ int parse_function(Parser *p) {
 
   p->i++;
 
-  if (p->arr->array[p->i].kind != TOK_ID && strcmp(p->arr->array[p->i].literal, "main") != 0) {
+  if (p->arr->array[p->i].kind != TOK_ID &&
+      strcmp(p->arr->array[p->i].literal, "main") != 0) {
     return 0;
   }
+
+  AST_Function *func = malloc(sizeof(AST_Function));
+
+  prog->func = func;
+
+  func->name = "main";
 
   p->i++;
 
@@ -79,7 +93,7 @@ int parse_function(Parser *p) {
 
   p->i++;
 
-  if (parse_statement(p) != 1) {
+  if (parse_statement(p, func) != 1) {
     return 0;
   }
 
