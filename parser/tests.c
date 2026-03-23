@@ -1,5 +1,5 @@
 #include "../lexer/lex.c"
-#include "parse.c"
+#include "print.c"
 
 int main() {
 
@@ -33,29 +33,17 @@ int main() {
 
   printf("%d\n", parse_one_result);
   if (parse_one_result == 1) {
-    printf("  Program\n");
-    printf("    Function (Name: %s)\n", prog_1->func->name);
-    printf("      Return statement\n");
-    printf("        Expression (Constant: %s)\n",
-           prog_1->func->body->exp->constant);
+    print_ast(prog_1);
   }
 
   printf("%d\n", parse_two_result);
   if (parse_two_result == 1) {
-    printf("  Program\n");
-    printf("    Function (Name: %s)\n", prog_2->func->name);
-    printf("      Return statement\n");
-    printf("        Expression (Constant: %s)\n",
-           prog_2->func->body->exp->constant);
+    print_ast(prog_2);
   }
 
   printf("%d\n", parse_three_result);
   if (parse_three_result == 1) {
-    printf("  Program\n");
-    printf("    Function (Name: %s)\n", prog_3->func->name);
-    printf("      Return statement\n");
-    printf("        Expression (Constant: %s)\n",
-           prog_3->func->body->exp->constant);
+    print_ast(prog_3);
   }
 
   return 0;

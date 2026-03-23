@@ -16,8 +16,16 @@ Parser *initialize_parser(TokenArray *arr) {
   return p;
 }
 
+int compare_kind(Parser *p, TOK kind) {
+  if (p->arr->array[p->i].kind != kind) {
+    return 0;
+  }
+  return 1;
+}
+
+
 int parse_expression(Parser *p, AST_Statement *stat) {
-  if (p->arr->array[p->i].kind != TOK_INTLIT) {
+  if (compare_kind(p, TOK_INTLIT) == 0) {
     return 0;
   }
 
@@ -31,7 +39,7 @@ int parse_expression(Parser *p, AST_Statement *stat) {
 }
 
 int parse_statement(Parser *p, AST_Function *func) {
-  if (p->arr->array[p->i].kind != TOK_RETKEY) {
+  if (compare_kind(p, TOK_RETKEY) == 0) {
     return 0;
   }
 
@@ -45,7 +53,7 @@ int parse_statement(Parser *p, AST_Function *func) {
     return 0;
   }
 
-  if (p->arr->array[p->i].kind != TOK_SEMICOL) {
+  if (compare_kind(p, TOK_SEMICOL) == 0) {
     return 0;
   }
 
@@ -56,13 +64,13 @@ int parse_statement(Parser *p, AST_Function *func) {
 
 int parse_function(Parser *p, AST_Program *prog) {
 
-  if (p->arr->array[p->i].kind != TOK_INTKEY) {
+  if (compare_kind(p, TOK_INTKEY) == 0) {
     return 0;
   }
 
   p->i++;
 
-  if (p->arr->array[p->i].kind != TOK_ID &&
+  if (compare_kind(p, TOK_ID) == 0 ||
       strcmp(p->arr->array[p->i].literal, "main") != 0) {
     return 0;
   }
@@ -75,19 +83,19 @@ int parse_function(Parser *p, AST_Program *prog) {
 
   p->i++;
 
-  if (p->arr->array[p->i].kind != TOK_LPAREN) {
+  if (compare_kind(p, TOK_LPAREN) == 0) {
     return 0;
   }
 
   p->i++;
 
-  if (p->arr->array[p->i].kind != TOK_RPAREN) {
+  if (compare_kind(p, TOK_RPAREN) == 0) {
     return 0;
   }
 
   p->i++;
 
-  if (p->arr->array[p->i].kind != TOK_LCURLY) {
+  if (compare_kind(p, TOK_LCURLY) == 0) {
     return 0;
   }
 
@@ -97,7 +105,7 @@ int parse_function(Parser *p, AST_Program *prog) {
     return 0;
   }
 
-  if (p->arr->array[p->i].kind != TOK_RCURLY) {
+  if (compare_kind(p, TOK_RCURLY) == 0) {
     return 0;
   }
 
