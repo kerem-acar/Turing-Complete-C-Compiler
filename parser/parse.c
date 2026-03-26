@@ -23,7 +23,6 @@ int compare_kind(Parser *p, TOK kind) {
   return 1;
 }
 
-
 int parse_expression(Parser *p, AST_Statement *stat) {
   if (compare_kind(p, TOK_INTLIT) == 0) {
     return 0;

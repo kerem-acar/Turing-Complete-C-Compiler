@@ -1,3 +1,4 @@
+#include "../C_stoi/stoi.c"
 #include "../lexer/lex.c"
 #include "print.c"
 
@@ -31,19 +32,25 @@ int main() {
   int parse_two_result = parse_function(p2, prog_2);
   int parse_three_result = parse_function(p3, prog_3);
 
-  printf("%d\n", parse_one_result);
   if (parse_one_result == 1) {
-    print_ast(prog_1);
+    print_program_node(prog_1);
+    int out = 0;
+    stoi(prog_1->func->body->exp->constant, &out);
+    assert(out == 333);
   }
 
-  printf("%d\n", parse_two_result);
   if (parse_two_result == 1) {
-    print_ast(prog_2);
+    print_program_node(prog_2);
+    int out = 0;
+    stoi(prog_2->func->body->exp->constant, &out);
+    assert(out == 42);
   }
 
-  printf("%d\n", parse_three_result);
   if (parse_three_result == 1) {
-    print_ast(prog_3);
+    print_program_node(prog_3);
+    int out = 0;
+    stoi(prog_3->func->body->exp->constant, &out);
+    assert(out == 27);
   }
 
   return 0;
