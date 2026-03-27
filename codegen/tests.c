@@ -1,6 +1,6 @@
 #include "../C_stoi/stoi.c"
 #include "../lexer/lex.c"
-#include "print.c"
+#include "gen.c"
 
 int main() {
 
@@ -52,6 +52,14 @@ int main() {
     stoi(prog_3->func->body->exp->constant, &out);
     assert(out == 27);
   }
+
+  char *test_path1 = "test1_result.txt";
+  char *test_path2 = "test2_result.txt";
+  char *test_path3 = "test3_result.txt";
+
+  assert(generate(prog_1, test_path1) == 1);
+  assert(generate(prog_2, test_path2) == 1);
+  assert(generate(prog_3, test_path3) == 1);
 
   return 0;
 }
