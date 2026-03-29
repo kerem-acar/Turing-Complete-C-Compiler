@@ -1,1 +1,0 @@
-clang /parser/tests.c -o tests.exe

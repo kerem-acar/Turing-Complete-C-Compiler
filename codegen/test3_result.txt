@@ -1,3 +1,0 @@
-main:
-        mov      eax, 27
-        ret

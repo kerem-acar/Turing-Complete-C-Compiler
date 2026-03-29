@@ -1,4 +1,4 @@
-#include "../C_array/array.c"
+#include "../C_array/token_array.c"
 #include "ast.c"
 #include <string.h>
 

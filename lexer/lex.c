@@ -1,4 +1,4 @@
-#include "../C_array/array.c"
+#include "../C_array/token_array.c"
 #include "../C_map/map.c"
 #include "read_file.c"
 #include <ctype.h>
@@ -40,7 +40,7 @@ int lex(const char *src, TokenArray *result) {
       number[number_len] = '\0';
       tok.kind = TOK_INTLIT;
       tok.literal = number;
-      push_back(result, tok);
+      push_back_token(result, tok);
       continue;
     }
     if (isalpha(*src)) {
@@ -61,7 +61,7 @@ int lex(const char *src, TokenArray *result) {
         tok.kind = TOK_ID;
       }
       tok.literal = word;
-      push_back(result, tok);
+      push_back_token(result, tok);
       continue;
     }
 
@@ -77,7 +77,7 @@ int lex(const char *src, TokenArray *result) {
       tok.kind = TOK_UNK;
     }
     tok.literal = word;
-    push_back(result, tok);
+    push_back_token(result, tok);
     src++;
   }
   return 1;

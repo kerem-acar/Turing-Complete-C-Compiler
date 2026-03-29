@@ -1,28 +1,21 @@
+#include "../C_array/char_array.c"
 #include "stdio.h"
 #include "string.h"
 
-int write_function_name_to_file(char *file_path, char *func_name) {
-    FILE *fptr = fopen(file_path, "w");
+int write_string_to_file(char *file_path, CharArray *arr) {
+  FILE *fptr = fopen(file_path, "w");
 
-    if (fptr == NULL) {
-        return 0;
-    }
+  if (fptr == NULL) {
+    return 0;
+  }
 
-    fprintf(fptr, "%s:\n", func_name);
-    fclose(fptr);
-    return 1;
-}
+  int i = 0;
 
-int write_return_statement(char *file_path, char *constant) {
-    FILE *fptr = fopen(file_path, "a");
+  while (arr->array[i]) {
+    fprintf(fptr, "%c", arr->array[i]);
+    i++;
+  }
 
-    if (fptr == NULL) {
-        return 0;
-    }
-
-    fprintf(fptr, "        mov      eax, %s\n", constant);
-    fprintf(fptr, "        ret");
-
-    fclose(fptr);
-    return 1;
+  fclose(fptr);
+  return 1;
 }

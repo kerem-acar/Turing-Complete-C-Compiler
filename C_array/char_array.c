@@ -1,27 +1,26 @@
-#include "../lexer/token.c"
 #include <assert.h>
 #include <stdlib.h>
 #pragma once
 
 typedef struct {
-  Token *array;
+  char *array;
   int capacity;
   int size;
-} TokenArray;
+} CharArray;
 
-TokenArray *initialize_token_array(int capacity) {
-  TokenArray *arr = malloc(sizeof(TokenArray));
+CharArray *initialize_char_array(int capacity) {
+  CharArray *arr = malloc(sizeof(CharArray));
 
   assert(capacity > 0);
 
-  arr->array = malloc(capacity * sizeof(Token));
+  arr->array = malloc(capacity * sizeof(char));
   arr->capacity = capacity;
   arr->size = 0;
 
   return arr;
 }
 
-void set_array_index(TokenArray *arr, int index, Token val) {
+void set_char_array_index(CharArray *arr, int index, char val) {
   assert(arr != NULL);
   assert(arr->array != NULL);
   assert(index >= 0 && index < arr->capacity);
@@ -30,11 +29,11 @@ void set_array_index(TokenArray *arr, int index, Token val) {
   arr->size++;
 }
 
-void push_back(TokenArray *arr, Token val) {
+void push_back_char(CharArray *arr, char val) {
   assert(arr != NULL);
   assert(arr->array != NULL);
   if (arr->size == arr->capacity) {
-    Token *tmp = malloc((arr->capacity * 2) * sizeof(Token));
+    char *tmp = malloc((arr->capacity * 2) * sizeof(char));
 
     for (int i = 0; i < arr->capacity; ++i) {
       tmp[i] = arr->array[i];
@@ -54,7 +53,7 @@ void push_back(TokenArray *arr, Token val) {
   }
 }
 
-void delete_array(TokenArray **arr) {
+void delete_char_array(CharArray **arr) {
   assert((*arr) != NULL);
   assert((*arr)->array != NULL);
 

@@ -28,38 +28,21 @@ int main() {
   AST_Program *prog_2 = malloc(sizeof(AST_Program));
   AST_Program *prog_3 = malloc(sizeof(AST_Program));
 
-  int parse_one_result = parse_function(p1, prog_1);
-  int parse_two_result = parse_function(p2, prog_2);
-  int parse_three_result = parse_function(p3, prog_3);
+  parse_function(p1, prog_1);
+  parse_function(p2, prog_2);
+  parse_function(p3, prog_3);
 
-  if (parse_one_result == 1) {
-    print_program_node(prog_1);
-    int out = 0;
-    stoi(prog_1->func->body->exp->constant, &out);
-    assert(out == 333);
-  }
+  char *test_path1 = "test1_result.s";
+  char *test_path2 = "test2_result.s";
+  char *test_path3 = "test3_result.s";
 
-  if (parse_two_result == 1) {
-    print_program_node(prog_2);
-    int out = 0;
-    stoi(prog_2->func->body->exp->constant, &out);
-    assert(out == 42);
-  }
+  CharArray *char_arr1 = initialize_char_array(1);
+  CharArray *char_arr2 = initialize_char_array(1);
+  CharArray *char_arr3 = initialize_char_array(1);
 
-  if (parse_three_result == 1) {
-    print_program_node(prog_3);
-    int out = 0;
-    stoi(prog_3->func->body->exp->constant, &out);
-    assert(out == 27);
-  }
-
-  char *test_path1 = "test1_result.txt";
-  char *test_path2 = "test2_result.txt";
-  char *test_path3 = "test3_result.txt";
-
-  assert(generate(prog_1, test_path1) == 1);
-  assert(generate(prog_2, test_path2) == 1);
-  assert(generate(prog_3, test_path3) == 1);
+  assert(generate(prog_1, test_path1, char_arr1) == 1);
+  assert(generate(prog_2, test_path2, char_arr2) == 1);
+  assert(generate(prog_3, test_path3, char_arr3) == 1);
 
   return 0;
 }
