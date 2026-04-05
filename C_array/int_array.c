@@ -10,9 +10,8 @@ typedef struct {
 
 IntArray *initialize_int_array(int capacity) {
   assert(capacity > 0);
-  
-  IntArray *arr = malloc(sizeof(IntArray));
 
+  IntArray *arr = malloc(sizeof(IntArray));
 
   arr->array = malloc(capacity * sizeof(int));
   arr->capacity = capacity;
