@@ -3,25 +3,25 @@
 #pragma once
 
 typedef struct {
-  char *array;
+  %TYPE% *array;
   int capacity;
   int size;
-} CharArray;
+} %PREFIX%Array;
 
-CharArray *initialize_char_array(int capacity) {
+%PREFIX%Array *initialize_%NAME%_array(int capacity) {
   assert(capacity > 0);
   
-  CharArray *arr = malloc(sizeof(CharArray));
+  %PREFIX%Array *arr = malloc(sizeof(%PREFIX%Array));
 
 
-  arr->array = malloc(capacity * sizeof(char));
+  arr->array = malloc(capacity * sizeof(%TYPE%));
   arr->capacity = capacity;
   arr->size = 0;
 
   return arr;
 }
 
-void set_char_array_index(CharArray *arr, int index, char val) {
+void set_%NAME%_array_index(%PREFIX%Array *arr, int index, %TYPE% val) {
   assert(arr != NULL);
   assert(arr->array != NULL);
   assert(index >= 0 && index < arr->size);
@@ -29,11 +29,11 @@ void set_char_array_index(CharArray *arr, int index, char val) {
   arr->array[index] = val;
 }
 
-void push_back_char(CharArray *arr, char val) {
+void push_back_%NAME%(%PREFIX%Array *arr, %TYPE% val) {
   assert(arr != NULL);
   assert(arr->array != NULL);
   if (arr->size == arr->capacity) {
-    char *tmp = malloc((arr->capacity * 2) * sizeof(char));
+    %TYPE% *tmp = malloc((arr->capacity * 2) * sizeof(%TYPE%));
 
     for (int i = 0; i < arr->capacity; ++i) {
       tmp[i] = arr->array[i];
@@ -53,7 +53,7 @@ void push_back_char(CharArray *arr, char val) {
   }
 }
 
-void delete_char_array(CharArray **arr) {
+void delete_%NAME%_array(%PREFIX%Array **arr) {
   assert(arr != NULL);
   assert((*arr) != NULL);
   assert((*arr)->array != NULL);

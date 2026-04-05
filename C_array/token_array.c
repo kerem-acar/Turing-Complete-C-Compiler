@@ -10,9 +10,10 @@ typedef struct {
 } TokenArray;
 
 TokenArray *initialize_token_array(int capacity) {
+  assert(capacity > 0);
+  
   TokenArray *arr = malloc(sizeof(TokenArray));
 
-  assert(capacity > 0);
 
   arr->array = malloc(capacity * sizeof(Token));
   arr->capacity = capacity;
@@ -24,10 +25,9 @@ TokenArray *initialize_token_array(int capacity) {
 void set_token_array_index(TokenArray *arr, int index, Token val) {
   assert(arr != NULL);
   assert(arr->array != NULL);
-  assert(index >= 0 && index < arr->capacity);
+  assert(index >= 0 && index < arr->size);
 
   arr->array[index] = val;
-  arr->size++;
 }
 
 void push_back_token(TokenArray *arr, Token val) {
@@ -55,6 +55,7 @@ void push_back_token(TokenArray *arr, Token val) {
 }
 
 void delete_token_array(TokenArray **arr) {
+  assert(arr != NULL);
   assert((*arr) != NULL);
   assert((*arr)->array != NULL);
 
