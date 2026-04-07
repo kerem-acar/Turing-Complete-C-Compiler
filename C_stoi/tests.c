@@ -1,4 +1,5 @@
 #include "stoi.c"
+#include <stdio.h>
 
 int main() {
   char *test1 = "1000";
@@ -23,4 +24,6 @@ int main() {
 
   assert(stoi(test5, &n));
   assert(n == 0);
+
+  printf("Tests passed successfully");
 }
