@@ -10,9 +10,11 @@ int lex(const char *src, TokenArray *result) {
 
   StrMap keyword_map;
   StrMap char_map;
+  StrMap operator_map;
 
   StrMap_init(&keyword_map, 2);
   StrMap_init(&char_map, 5);
+  StrMap_init(&operator_map, 3);
 
   StrMap_insert(&keyword_map, "return", TOK_RETKEY);
   StrMap_insert(&keyword_map, "int", TOK_INTKEY);
@@ -22,6 +24,10 @@ int lex(const char *src, TokenArray *result) {
   StrMap_insert(&char_map, "{", TOK_LCURLY);
   StrMap_insert(&char_map, "}", TOK_RCURLY);
   StrMap_insert(&char_map, ";", TOK_SEMICOL);
+
+  StrMap_insert(&operator_map, "~", TOK_BITCOMP);
+  StrMap_insert(&operator_map, "!", TOK_LOGNEG);
+  StrMap_insert(&operator_map, "-", TOK_NEGATION);
 
   while (*src) {
     if (isspace(*src)) {
@@ -70,9 +76,13 @@ int lex(const char *src, TokenArray *result) {
     word[0] = (*src);
     word[1] = '\0';
 
-    FindRes res = StrMap_find(&char_map, word);
-    if (res.found) {
-      tok.kind = res.val;
+    FindRes char_res = StrMap_find(&char_map, word);
+    FindRes operator_res = StrMap_find(&operator_map, word);
+
+    if (operator_res.found) {
+      tok.kind = operator_res.val;
+    } else if (char_res.found) {
+      tok.kind = char_res.val;
     } else {
       tok.kind = TOK_UNK;
     }

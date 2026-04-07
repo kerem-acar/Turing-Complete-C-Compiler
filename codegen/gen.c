@@ -12,9 +12,9 @@ void print_to_char_array(CharArray *arr, const char *fmt, ...) {
   va_list args;
   int n;
   va_start(args, fmt);
-  
+
   static char buf[256];
-  
+
   n = vsprintf(buf, fmt, args);
   assert(n < 256);
 
@@ -32,21 +32,9 @@ int generate(AST_Program *prog, char *file_path, CharArray *arr) {
   print_to_char_array(arr, "%s\n", syntax_directive);
   print_to_char_array(arr, "%s%s\n", globl_directive, prog->func->name);
   print_to_char_array(arr, "%s:\n", prog->func->name);
-  print_to_char_array(arr, "%s%s%s\n", indent, move_to_eax, prog->func->body->exp->constant);
+  print_to_char_array(arr, "%s%s%s\n", indent, move_to_eax,
+                      prog->func->body->exp->constant);
   print_to_char_array(arr, "%s%s\n", indent, ret);
-  // push_back_word(syntax_directive, arr);
-  // push_back_word(globl_directive, arr);
-  // push_back_word(prog->func->name, arr);
-  // push_back_char(arr, '\n');
-  // push_back_word(prog->func->name, arr);
-  // push_back_char(arr, ':');
-  // push_back_char(arr, '\n');
-  // push_back_word(indent, arr);
-  // push_back_word(move_to_eax, arr);
-  // push_back_word(prog->func->body->exp->constant, arr);
-  // push_back_char(arr, '\n');
-  // push_back_word(indent, arr);
-  // push_back_word(ret, arr);
 
   push_back_char(arr, '\0');
 
