@@ -48,7 +48,7 @@ AST_Expression *parse_expression(Parser *p) {
       exp->UnOp.exp = parse_expression(p);
       return exp;
     }
-  } 
+  }
 }
 
 int parse_statement(Parser *p, AST_Function *func) {
@@ -111,7 +111,7 @@ int parse_function(Parser *p, AST_Program *prog) {
 
   p->i++;
 
-  if (parse_statement(p, func) != 1) {  
+  if (parse_statement(p, func) != 1) {
     return 0;
   }
 

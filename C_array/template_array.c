@@ -1,23 +1,22 @@
 typedef struct {
-  % TYPE % *array;
+  %TYPE% *array;
   int capacity;
   int size;
-} % PREFIX % Array;
+} %PREFIX%Array;
 
-% PREFIX % Array *initialize_ % NAME % _array(int capacity) {
+%PREFIX%Array *initialize_%NAME%_array(int capacity) {
   assert(capacity > 0);
 
-  % PREFIX % Array *arr = malloc(sizeof(% PREFIX % Array));
+  %PREFIX%Array *arr = malloc(sizeof(%PREFIX%Array));
 
-  arr->array = malloc(capacity * sizeof(% TYPE %));
+  arr->array = malloc(capacity * sizeof(%TYPE%));
   arr->capacity = capacity;
   arr->size = 0;
 
   return arr;
 }
 
-void set_ % NAME %
-    _array_index(% PREFIX % Array * arr, int index, % TYPE % val) {
+void set_%NAME%_array_index(%PREFIX%Array * arr, int index, %TYPE% val) {
   assert(arr != NULL);
   assert(arr->array != NULL);
   assert(index >= 0 && index < arr->size);
@@ -25,11 +24,11 @@ void set_ % NAME %
   arr->array[index] = val;
 }
 
-void push_back_ % NAME % (% PREFIX % Array * arr, % TYPE % val) {
+void push_back_%NAME%(%PREFIX%Array * arr, %TYPE% val) {
   assert(arr != NULL);
   assert(arr->array != NULL);
   if (arr->size == arr->capacity) {
-    % TYPE % *tmp = malloc((arr->capacity * 2) * sizeof(% TYPE %));
+    %TYPE% *tmp = malloc((arr->capacity * 2) * sizeof(%TYPE%));
 
     for (int i = 0; i < arr->capacity; ++i) {
       tmp[i] = arr->array[i];
@@ -49,7 +48,7 @@ void push_back_ % NAME % (% PREFIX % Array * arr, % TYPE % val) {
   }
 }
 
-void delete_ % NAME % _array(% PREFIX % Array * *arr) {
+void delete_%NAME%_array(%PREFIX%Array *arr) {
   assert(arr != NULL);
   assert((*arr) != NULL);
   assert((*arr)->array != NULL);
