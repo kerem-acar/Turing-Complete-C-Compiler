@@ -1,0 +1,2 @@
+clang %1/tests.c -o tests.exe
+tests.exe

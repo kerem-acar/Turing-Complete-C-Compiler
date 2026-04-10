@@ -1,9 +1,9 @@
 #include "lex.c"
 
 int main() {
-  char *file_path1 = "../test_cases/test_case4.c";
-  char *file_path2 = "../test_cases/test_case5.c";
-  char *file_path3 = "../test_cases/test_case6.c";
+  char *file_path1 = "test_cases/test_case4.c";
+  char *file_path2 = "test_cases/test_case5.c";
+  char *file_path3 = "test_cases/test_case6.c";
 
   TokenArray *arr1 = initialize_token_array(1);
   TokenArray *arr2 = initialize_token_array(1);

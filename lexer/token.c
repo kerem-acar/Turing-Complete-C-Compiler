@@ -1,5 +1,3 @@
-#pragma once
-
 typedef enum TOK {
   TOK_LCURLY,
   TOK_RCURLY,

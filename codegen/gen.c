@@ -1,8 +1,4 @@
-#include "../parser/print.c"
-#include "write_to_file.c"
-#include <stdarg.h>
-
-void push_back_word(char *word, CharArray *arr, int length) {
+void push_back_word(CharArray *arr, char *word, int length) {
   for (int i = 0; i < length; i++) {
     push_back_char(arr, word[i]);
   }
@@ -18,7 +14,7 @@ void print_to_char_array(CharArray *arr, const char *fmt, ...) {
   n = vsprintf(buf, fmt, args);
   assert(n < 256);
 
-  push_back_word(buf, arr, n);
+  push_back_word(arr, buf, n);
   va_end(args);
 }
 

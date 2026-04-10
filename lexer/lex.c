@@ -1,8 +1,3 @@
-#include "../C_array/token_array.c"
-#include "../C_map/map.c"
-#include "read_file.c"
-#include <ctype.h>
-
 int lex(const char *src, TokenArray *result) {
   if (src == NULL) {
     return 0;

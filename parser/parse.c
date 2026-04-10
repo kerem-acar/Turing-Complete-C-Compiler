@@ -1,7 +1,3 @@
-#include "../C_array/token_array.c"
-#include "ast.c"
-#include <string.h>
-
 typedef struct Parser {
   TokenArray *arr;
   int i;
@@ -23,18 +19,36 @@ int compare_kind(Parser *p, TOK kind) {
   return 1;
 }
 
-int parse_expression(Parser *p, AST_Statement *stat) {
-  if (compare_kind(p, TOK_INTLIT) == 0) {
-    return 0;
+int is_unop(Parser *p) {
+  if (compare_kind(p, TOK_LOGNEG) == 1) {
+    return 1;
   }
+  if (compare_kind(p, TOK_NEGATION) == 1) {
+    return 1;
+  }
+  if (compare_kind(p, TOK_BITCOMP) == 1) {
+    return 1;
+  }
+  return 0;
+}
+
+AST_Expression *parse_expression(Parser *p) {
+  p->i++;
 
   AST_Expression *exp = malloc(sizeof(AST_Expression));
-  exp->constant = p->arr->array[p->i].literal;
 
-  stat->exp = exp;
-
-  p->i++;
-  return 1;
+  if (compare_kind(p, TOK_INTLIT) == 1) {
+    exp->kind = 0;
+    exp->Constant = p->arr->array[p->i].literal;
+    return exp;
+  } else {
+    if (is_unop(p) == 1) {
+      exp->UnOp.op = p->arr->array[p->i];
+      exp->kind = 1;
+      exp->UnOp.exp = parse_expression(p);
+      return exp;
+    }
+  } 
 }
 
 int parse_statement(Parser *p, AST_Function *func) {
@@ -42,15 +56,13 @@ int parse_statement(Parser *p, AST_Function *func) {
     return 0;
   }
 
-  p->i++;
-
   AST_Statement *stat = malloc(sizeof(AST_Statement));
 
   func->body = stat;
 
-  if (parse_expression(p, stat) != 1) {
-    return 0;
-  }
+  stat->exp = parse_expression(p);
+
+  p->i++;
 
   if (compare_kind(p, TOK_SEMICOL) == 0) {
     return 0;
@@ -62,7 +74,6 @@ int parse_statement(Parser *p, AST_Function *func) {
 }
 
 int parse_function(Parser *p, AST_Program *prog) {
-
   if (compare_kind(p, TOK_INTKEY) == 0) {
     return 0;
   }
@@ -100,7 +111,7 @@ int parse_function(Parser *p, AST_Program *prog) {
 
   p->i++;
 
-  if (parse_statement(p, func) != 1) {
+  if (parse_statement(p, func) != 1) {  
     return 0;
   }
 

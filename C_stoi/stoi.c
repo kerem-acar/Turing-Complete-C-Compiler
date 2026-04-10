@@ -1,6 +1,3 @@
-#include <assert.h>
-#include <ctype.h>
-
 int stoi(char *str, int *out) {
   assert(str);
 

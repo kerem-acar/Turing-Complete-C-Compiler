@@ -1,8 +1,3 @@
-#include "../lexer/token.c"
-#include <assert.h>
-#include <stdlib.h>
-#pragma once
-
 typedef struct {
   Token *array;
   int capacity;

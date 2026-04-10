@@ -1,5 +1,14 @@
 typedef struct AST_Expression {
-  char *constant;
+  int kind;
+
+  union {
+    struct {
+      Token op;
+      struct AST_Expression *exp;
+    } UnOp;
+
+    char *Constant;
+  };
 } AST_Expression;
 
 typedef struct AST_Statement {

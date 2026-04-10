@@ -1,7 +1,3 @@
-#include "../C_stoi/stoi.c"
-#include "../lexer/lex.c"
-#include "gen.c"
-
 int main() {
 
   char *file_path1 = "../test_cases/test_case1.c";

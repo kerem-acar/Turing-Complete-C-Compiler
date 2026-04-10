@@ -1,7 +1,3 @@
-#include <assert.h>
-#include <stdlib.h>
-#pragma once
-
 typedef struct {
   % TYPE % *array;
   int capacity;

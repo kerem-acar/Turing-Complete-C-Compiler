@@ -1,6 +1,3 @@
-#include <stdio.h>
-#include <stdlib.h>
-
 const char *read_file(const char *filename) {
   FILE *file = fopen(filename, "rb");
   if (!file) {

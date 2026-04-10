@@ -1,7 +1,3 @@
-#include "../C_array/char_array.c"
-#include "stdio.h"
-#include "string.h"
-
 int write_string_to_file(char *file_path, CharArray *arr) {
   FILE *fptr = fopen(file_path, "w");
 

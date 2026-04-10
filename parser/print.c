@@ -1,13 +1,14 @@
-#include "parse.c"
-
 void print_expression_node(AST_Expression *exp, int *indent) {
   for (int i = 0; i < (*indent); ++i) {
     printf(" ");
   }
-
-  printf("Expression (Constant: %s)\n", exp->constant);
-
-  *indent += 2;
+  if (exp->kind == 0) {
+    printf("Expression (Constant: %s)\n", exp->Constant);
+  } else {
+    printf("Expression (Unary Operator: %s)\n", exp->UnOp.op.literal);
+    *indent += 2;
+    print_expression_node(exp->UnOp.exp, indent);
+  }
 }
 
 void print_statement_node(AST_Statement *stat, int *indent) {
