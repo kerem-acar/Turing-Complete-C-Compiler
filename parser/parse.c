@@ -20,13 +20,13 @@ int compare_kind(Parser *p, TOK kind) {
 }
 
 int is_unop(Parser *p) {
-  if (compare_kind(p, TOK_LOGNEG) == 1) {
+  if (compare_kind(p, TOK_LOGNEG)) {
     return 1;
   }
-  if (compare_kind(p, TOK_NEGATION) == 1) {
+  if (compare_kind(p, TOK_NEGATION)) {
     return 1;
   }
-  if (compare_kind(p, TOK_BITCOMP) == 1) {
+  if (compare_kind(p, TOK_BITCOMP)) {
     return 1;
   }
   return 0;
@@ -37,22 +37,22 @@ AST_Expression *parse_expression(Parser *p) {
 
   AST_Expression *exp = malloc(sizeof(AST_Expression));
 
-  if (compare_kind(p, TOK_INTLIT) == 1) {
+  if (compare_kind(p, TOK_INTLIT)) {
     exp->kind = 0;
     exp->Constant = p->arr->array[p->i].literal;
-    return exp;
+  } else if (is_unop(p)) {
+    exp->UnOp.op = p->arr->array[p->i];
+    exp->kind = 1;
+    exp->UnOp.exp = parse_expression(p);
   } else {
-    if (is_unop(p) == 1) {
-      exp->UnOp.op = p->arr->array[p->i];
-      exp->kind = 1;
-      exp->UnOp.exp = parse_expression(p);
-      return exp;
-    }
+    assert(0);
   }
+
+  return exp;
 }
 
 int parse_statement(Parser *p, AST_Function *func) {
-  if (compare_kind(p, TOK_RETKEY) == 0) {
+  if (!compare_kind(p, TOK_RETKEY)) {
     return 0;
   }
 
@@ -64,7 +64,7 @@ int parse_statement(Parser *p, AST_Function *func) {
 
   p->i++;
 
-  if (compare_kind(p, TOK_SEMICOL) == 0) {
+  if (!compare_kind(p, TOK_SEMICOL)) {
     return 0;
   }
 
@@ -74,13 +74,13 @@ int parse_statement(Parser *p, AST_Function *func) {
 }
 
 int parse_function(Parser *p, AST_Program *prog) {
-  if (compare_kind(p, TOK_INTKEY) == 0) {
+  if (!compare_kind(p, TOK_INTKEY)) {
     return 0;
   }
 
   p->i++;
 
-  if (compare_kind(p, TOK_ID) == 0 ||
+  if (!compare_kind(p, TOK_ID) ||
       strcmp(p->arr->array[p->i].literal, "main") != 0) {
     return 0;
   }
@@ -93,29 +93,29 @@ int parse_function(Parser *p, AST_Program *prog) {
 
   p->i++;
 
-  if (compare_kind(p, TOK_LPAREN) == 0) {
+  if (!compare_kind(p, TOK_LPAREN)) {
     return 0;
   }
 
   p->i++;
 
-  if (compare_kind(p, TOK_RPAREN) == 0) {
+  if (!compare_kind(p, TOK_RPAREN)) {
     return 0;
   }
 
   p->i++;
 
-  if (compare_kind(p, TOK_LCURLY) == 0) {
+  if (!compare_kind(p, TOK_LCURLY)) {
     return 0;
   }
 
   p->i++;
 
-  if (parse_statement(p, func) != 1) {
+  if (!parse_statement(p, func)) {
     return 0;
   }
 
-  if (compare_kind(p, TOK_RCURLY) == 0) {
+  if (!compare_kind(p, TOK_RCURLY)) {
     return 0;
   }
 

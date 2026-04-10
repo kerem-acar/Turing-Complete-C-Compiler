@@ -5,11 +5,11 @@
 #include <stdlib.h>
 #include <string.h>
 
+#include "../lexer/token.c"
 #include "../C_array/token_array.c"
 #include "../C_map/map.c"
 #include "../lexer/lex.c"
 #include "../lexer/read_file.c"
-#include "../lexer/token.c"
 #include "../parser/ast.c"
 #include "../parser/parse.c"
 #include "../parser/print.c"
