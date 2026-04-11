@@ -1,4 +1,4 @@
-int write_string_to_file(char *file_path, CharArray *arr) {
+int write_string_to_file(char *file_path, CharArray *arr) {  
   FILE *fptr = fopen(file_path, "w");
 
   if (fptr == NULL) {

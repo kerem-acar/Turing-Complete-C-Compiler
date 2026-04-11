@@ -1,0 +1,1 @@
+clang test_assembly.c test1_result.s test2_result.s test3_result.s -o tests.exe && tests.exe

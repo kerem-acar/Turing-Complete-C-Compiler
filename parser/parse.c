@@ -20,15 +20,14 @@ int compare_kind(Parser *p, TOK kind) {
 }
 
 int is_unop(Parser *p) {
-  if (compare_kind(p, TOK_LOGNEG)) {
+  switch(p->arr->array[p->i].kind) {
+  case TOK_LOGNEG:
+  case TOK_NEGATION:
+  case TOK_BITCOMP: {
     return 1;
+  } break;
   }
-  if (compare_kind(p, TOK_NEGATION)) {
-    return 1;
-  }
-  if (compare_kind(p, TOK_BITCOMP)) {
-    return 1;
-  }
+  
   return 0;
 }
 

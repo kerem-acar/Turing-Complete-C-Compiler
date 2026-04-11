@@ -41,8 +41,8 @@ int main() {
 
   assert(parse_function(p1, prog_1) == 1);
   assert(parse_function(p2, prog_2) == 1);
-  assert(parse_function(p3, prog_3) == 1);
-
+  assert(parse_function(p3, prog_3) == 1);  
+  
   print_program_node(prog_1);
   print_program_node(prog_2);
   print_program_node(prog_3);

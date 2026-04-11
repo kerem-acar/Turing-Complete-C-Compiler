@@ -1,5 +1,7 @@
 .intel_syntax noprefix
-.globl main
-main:
-    mov eax, 4242
+.globl main2
+main2:
+    mov eax, 2
+    neg eax
+    not eax
     ret

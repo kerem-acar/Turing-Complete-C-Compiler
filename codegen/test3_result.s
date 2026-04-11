@@ -1,5 +1,8 @@
 .intel_syntax noprefix
-.globl main
-main:
-    mov eax, 2
+.globl main3
+main3:
+    mov eax, 0
+    cmp eax, 0
+    mov eax, 0
+    sete al
     ret
