@@ -5,7 +5,7 @@
 #include <stdlib.h>
 #include <string.h>
 
-#include "../parser/compare_files.c"
+#include "../parser/compare_strings.c"
 #include "../lexer/token.c"
 #include "../C_array/token_array.c"
 #include "../C_map/map.c"
@@ -33,7 +33,7 @@ void run_test_case(char *test_case_path, char *result_file_path, char *expected_
   char *s1 = read_file(result_file_path);
   char *s2 = read_file(expected_file_path);
 
-  compare(s1, s2);
+  assert(compare(s1, s2));
 }
 
 int main() {
