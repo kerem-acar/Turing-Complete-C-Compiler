@@ -8,7 +8,7 @@ const char *read_file(const char *filename) {
   fseek(file, 0, SEEK_END);
 
   long size = ftell(file);
-
+  
   rewind(file);
 
   char *buffer = (char *)malloc(size + 1);

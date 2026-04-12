@@ -1,0 +1,6 @@
+Program
+  Function (Name: main)
+    Return statement
+      Expression (Unary Operator: ~)
+        Expression (Unary Operator: -)
+          Expression (Constant: 2)
