@@ -11,7 +11,10 @@ typedef enum TOK {
   TOK_UNK,
   TOK_NEGATION,
   TOK_BITCOMP,
-  TOK_LOGNEG
+  TOK_LOGNEG,
+  TOK_ADD,
+  TOK_MULTIPLY,
+  TOK_DIVIDE
 } TOK;
 
 typedef struct Token {

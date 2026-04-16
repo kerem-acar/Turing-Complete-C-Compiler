@@ -9,7 +9,7 @@ int lex(const char *src, TokenArray *result) {
 
   StrMap_init(&keyword_map, 2);
   StrMap_init(&char_map, 5);
-  StrMap_init(&operator_map, 3);
+  StrMap_init(&operator_map, 6);
 
   StrMap_insert(&keyword_map, "return", TOK_RETKEY);
   StrMap_insert(&keyword_map, "int", TOK_INTKEY);
@@ -23,6 +23,9 @@ int lex(const char *src, TokenArray *result) {
   StrMap_insert(&operator_map, "~", TOK_BITCOMP);
   StrMap_insert(&operator_map, "!", TOK_LOGNEG);
   StrMap_insert(&operator_map, "-", TOK_NEGATION);
+  StrMap_insert(&operator_map, "+", TOK_ADD);
+  StrMap_insert(&operator_map, "*", TOK_MULTIPLY);
+  StrMap_insert(&operator_map, "/", TOK_DIVIDE);
 
   while (*src) {
     if (isspace(*src)) {
