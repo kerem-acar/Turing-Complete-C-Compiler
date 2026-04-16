@@ -1,9 +1,9 @@
-void unset_bit(int *n, unsigned int pos) {
+int unset_bit(int n, unsigned int pos) {
   assert(pos < 32);
     
   unsigned int y = 1;
   y = y << pos;
   y = ~y;
 
-  *n = (*n) & y;  
+  return n & y;  
 }
