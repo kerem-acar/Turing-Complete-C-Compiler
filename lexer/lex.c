@@ -34,37 +34,33 @@ int lex(const char *src, TokenArray *result) {
     }
     Token tok;
     if (isdigit(*src)) {
-      char *number = malloc(sizeof(char) * 256);
-      int number_len = 0;
-      while (*src && isdigit(*src) && number_len < 255) {
-        number[number_len] = (*src);
-        number_len++;
+      CharArray *number = initialize_char_array(1);
+      while (*src && isdigit(*src)) {
+        push_back_char(number, (*src));
         src++;
       }
-      number[number_len] = '\0';
+      push_back_char(number, '\0');
       tok.kind = TOK_INTLIT;
-      tok.literal = number;
+      tok.literal = number->array;
       push_back_token(result, tok);
       continue;
     }
     if (isalpha(*src)) {
-      char *word = malloc(sizeof(char) * 256);
-      int word_len = 0;
-      while (*src && isalpha(*src) && word_len < 255) {
-        word[word_len] = (*src);
-        word_len++;
+      CharArray *word = initialize_char_array(1);
+      while (*src && isalpha(*src)) {
+        push_back_char(word, (*src));
         src++;
       }
-      word[word_len] = '\0';
+      push_back_char(word, '\0');
 
-      FindRes res = StrMap_find(&keyword_map, word);
+      FindRes res = StrMap_find(&keyword_map, word->array);
 
       if (res.found) {
         tok.kind = res.val;
       } else {
         tok.kind = TOK_ID;
       }
-      tok.literal = word;
+      tok.literal = word->array;
       push_back_token(result, tok);
       continue;
     }
