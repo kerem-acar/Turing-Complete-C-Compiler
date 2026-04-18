@@ -7,6 +7,7 @@
 
 #include "../parser/compare_strings.c"
 #include "../lexer/token.c"
+#include "../C_array/char_array.c"
 #include "../C_array/token_array.c"
 #include "../C_map/map.c"
 #include "../lexer/lex.c"
@@ -37,9 +38,9 @@ void run_test_case(char *test_case_path, char *result_file_path, char *expected_
 }
 
 int main() {
-  run_test_case("test_cases/test_case4.c", "parser/test1_result.txt", "parser/test1_expected.txt");
-  run_test_case("test_cases/test_case5.c", "parser/test2_result.txt", "parser/test2_expected.txt");
-  run_test_case("test_cases/test_case6.c", "parser/test3_result.txt", "parser/test3_expected.txt");
+  run_test_case("test_cases/test_case7.c", "parser/test1_result.txt", "parser/test1_expected.txt");
+  run_test_case("test_cases/test_case8.c", "parser/test2_result.txt", "parser/test2_expected.txt");
+  run_test_case("test_cases/test_case9.c", "parser/test3_result.txt", "parser/test3_expected.txt");
 
   printf("All test cases passed");
   return 0;

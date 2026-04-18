@@ -1,9 +1,21 @@
+typedef enum ExpKind {
+  EXP_BIN_OP,
+  EXP_UN_OP,
+  EXP_CONSTANT
+} ExpKind;
+
 typedef struct AST_Expression {
-  int kind; 
+  ExpKind kind; 
 
   union {
     struct {
-      Token op;
+      Token bin_op;
+      struct AST_Expression *left_exp;
+      struct AST_Expression *right_exp;      
+    } BinOp;
+
+    struct {
+      Token un_op;
       struct AST_Expression *exp;
     } UnOp;
 

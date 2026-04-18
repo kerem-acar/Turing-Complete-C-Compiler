@@ -1,5 +1,8 @@
 Program
   Function (Name: main)
     Return statement
-      Expression (Unary Operator: !)
-        Expression (Constant: 0)
+      Expression (Binary Operator: *)
+        Expression (Binary Operator: /)
+          Expression (Constant: 6)
+          Expression (Constant: 3)
+        Expression (Constant: 2)
