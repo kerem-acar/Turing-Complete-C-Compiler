@@ -2,7 +2,7 @@ Program
   Function (Name: main)
     Return statement
       Expression (Binary Operator: +)
+        Expression (Constant: 3)
         Expression (Binary Operator: +)
-          Expression (Constant: 3)
           Expression (Constant: 4)
-        Expression (Constant: 5)
+          Expression (Constant: 5)

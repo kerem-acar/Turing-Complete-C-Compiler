@@ -31,37 +31,74 @@ int is_unop(Parser *p) {
   return 0;
 }
 
-AST_Expression *parse_num(Parser *p) {
-  p->i++;
-
+AST_Expression *initialize_constant(Parser *p) {
   AST_Expression *exp = malloc(sizeof(AST_Expression));
-
-  if (!compare_kind(p, TOK_INTLIT)) {
-    assert(0);
-  }
-
+  
   exp->kind = EXP_CONSTANT;
   exp->Constant = p->arr->array[p->i].literal;
 
   return exp;
 }
 
-AST_Expression *parse_muldiv(Parser *p) {
-  AST_Expression *exp1 = parse_num(p);
+AST_Expression *initialize_unop(Parser *p) {
+  AST_Expression *exp = malloc(sizeof(AST_Expression));
+
+  exp->kind = EXP_UN_OP;
+  exp->UnOp.un_op = p->arr->array[p->i];  
+  exp->UnOp.exp = NULL;
+
+  return exp;
+}
+
+AST_Expression *initialize_binop(AST_Expression *left, AST_Expression *right, Token op) {
+  AST_Expression *exp = malloc(sizeof(AST_Expression));
+
+  exp->kind = EXP_BIN_OP;
+  exp->BinOp.left_exp = left;
+  exp->BinOp.right_exp = right;
+  exp->BinOp.bin_op = op;
+
+  return exp;
+}
+
+AST_Expression *parse_expression(Parser *p);
+
+AST_Expression *parse_factor(Parser *p) {
+  p->i++;
+
+  AST_Expression *exp;
+
+  if (compare_kind(p, TOK_LPAREN)) {
+    exp = parse_expression(p);
+
+    if (p->arr->array[p->i + 1].kind != TOK_RPAREN) {
+      assert(0);
+    }
+
+    p->i++;
+  } else if (is_unop(p)) {
+    exp = initialize_unop(p);
+    exp->UnOp.exp = parse_factor(p);
+  } else if (compare_kind(p, TOK_INTLIT)) {
+    exp = initialize_constant(p);
+  } else {
+    assert(0);
+  }
+
+  return exp;
+}
+
+AST_Expression *parse_term(Parser *p) {
+  AST_Expression *exp1 = parse_factor(p);
 
   Token next = p->arr->array[p->i + 1];
 
   while (next.kind == TOK_MULTIPLY || next.kind == TOK_DIVIDE) {
     p->i++;
-    AST_Expression *exp2 = parse_num(p);
+    AST_Expression *exp2 = parse_factor(p);
 
-    AST_Expression *new_bin_op = malloc(sizeof(AST_Expression));
-
-    new_bin_op->kind = EXP_BIN_OP;
-    new_bin_op->BinOp.bin_op = next;
-    new_bin_op->BinOp.left_exp = exp1;
-    new_bin_op->BinOp.right_exp = exp2;
-
+    AST_Expression *new_bin_op = initialize_binop(exp1, exp2, next);
+    
     exp1 = new_bin_op;
     
     next = p->arr->array[p->i + 1];
@@ -71,13 +108,13 @@ AST_Expression *parse_muldiv(Parser *p) {
 }
 
 AST_Expression *parse_expression(Parser *p) {
-  AST_Expression *exp1 = parse_muldiv(p);
+  AST_Expression *exp1 = parse_term(p);
 
   Token next = p->arr->array[p->i + 1];
 
   while (next.kind == TOK_ADD || next.kind == TOK_NEGATION) {
     p->i++;
-    AST_Expression *exp2 = parse_muldiv(p);
+    AST_Expression *exp2 = parse_term(p);
 
     AST_Expression *new_bin_op = malloc(sizeof(AST_Expression));
 
@@ -90,18 +127,6 @@ AST_Expression *parse_expression(Parser *p) {
 
     next = p->arr->array[p->i + 1];
   }
-
-  // AST_Expression *exp = malloc(sizeof(AST_Expression)); 
-  // if (compare_kind(p, TOK_INTLIT)) {
-  //   exp->kind = 0;
-  //   exp->Constant = p->arr->array[p->i].literal;
-  // } else if (is_unop(p)) {
-  //   exp->UnOp.op = p->arr->array[p->i];
-  //   exp->kind = 1;
-  //   exp->UnOp.exp = parse_expression(p);
-  // } else {
-  //   assert(0);
-  // }
 
   return exp1;
 }

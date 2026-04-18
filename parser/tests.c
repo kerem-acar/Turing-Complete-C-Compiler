@@ -27,7 +27,7 @@ void run_test_case(char *test_case_path, char *result_file_path, char *expected_
 
   AST_Program *prog = malloc(sizeof(AST_Program));
 
-  assert(parse_function(p, prog) == 1);
+  assert(parse_function(p, prog));
 
   print_program_node(prog, result_file_path);
 
