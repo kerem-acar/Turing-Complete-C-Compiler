@@ -116,12 +116,7 @@ AST_Expression *parse_expression(Parser *p) {
     p->i++;
     AST_Expression *exp2 = parse_term(p);
 
-    AST_Expression *new_bin_op = malloc(sizeof(AST_Expression));
-
-    new_bin_op->kind = EXP_BIN_OP;
-    new_bin_op->BinOp.bin_op = next;
-    new_bin_op->BinOp.left_exp = exp1;
-    new_bin_op->BinOp.right_exp = exp2;
+    AST_Expression *new_bin_op = initialize_binop(exp1, exp2, next);
 
     exp1 = new_bin_op;
 
