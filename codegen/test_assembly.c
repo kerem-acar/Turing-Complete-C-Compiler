@@ -7,8 +7,8 @@ int main3();
 
 int main() {
 
-  assert(main1() == -12);
-  assert(main2() == 1);
+  assert(main1() == 12);
+  assert(main2() == -24);
   assert(main3() == 1);
 
   printf("All tests passed");

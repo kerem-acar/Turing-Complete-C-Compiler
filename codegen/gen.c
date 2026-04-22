@@ -25,12 +25,22 @@ void generate_expression(AST_Expression *exp, CharArray *arr) {
   static char *bit_comp = "not eax"; 
   static char *compare_to = "cmp eax, ";
   static char *sete_al = "sete al";
+  static char *push_from_rax = "push rax";
+  static char *pop_to_rcx = "pop rcx";
+  static char *add_eax_ecx = "add eax, ecx";
+  static char *mul_eax_ecx = "imul eax, ecx";
+  static char *sub_ecx_eax = "sub ecx, eax";
+  static char *mov_ecx_eax = "mov eax, ecx";
+  static char *mov_eax_ecx = "mov ecx, eax";
+  static char *divide_by_ecx = "idiv ecx";
+  static char *sign_extend = "cdq";
+  static char *pop_to_rax = "pop rax";
 
-  if (exp->kind == 0) {
+  if (exp->kind == EXP_CONSTANT) {
     print_to_char_array(arr, "%s%s%s\n", indent, move_to_eax, exp->Constant);
-  } else {
+  } else if (exp->kind == EXP_UN_OP) {
     generate_expression(exp->UnOp.exp, arr);
-    switch(exp->UnOp.op.kind) {
+    switch(exp->UnOp.un_op.kind) {
     case TOK_NEGATION: {
       print_to_char_array(arr, "%s%s\n", indent, neg);
     } break;
@@ -41,7 +51,34 @@ void generate_expression(AST_Expression *exp, CharArray *arr) {
       print_to_char_array(arr, "%s%s%c\n", indent, compare_to, '0');
       print_to_char_array(arr, "%s%s%c\n", indent, move_to_eax, '0');
       print_to_char_array(arr, "%s%s\n", indent, sete_al);
+    } break;
+    }
+  } else {
+    generate_expression(exp->BinOp.left_exp, arr);
 
+    print_to_char_array(arr, "%s%s\n", indent, push_from_rax);
+
+    generate_expression(exp->BinOp.right_exp, arr);
+
+    switch(exp->BinOp.bin_op.kind) {
+    case TOK_ADD: {
+      print_to_char_array(arr, "%s%s\n", indent, pop_to_rcx);
+      print_to_char_array(arr, "%s%s\n", indent, add_eax_ecx);
+    } break;
+    case TOK_MULTIPLY: {
+      print_to_char_array(arr, "%s%s\n", indent, pop_to_rcx);
+      print_to_char_array(arr, "%s%s\n", indent, mul_eax_ecx);
+    } break;
+    case TOK_LOGNEG: {
+      print_to_char_array(arr, "%s%s\n", indent, pop_to_rcx);
+      print_to_char_array(arr, "%s%s\n", indent, sub_ecx_eax);
+      print_to_char_array(arr, "%s%s\n", indent, mov_ecx_eax);
+    } break;
+    case TOK_DIVIDE: {
+      print_to_char_array(arr, "%s%s\n", indent, mov_eax_ecx);
+      print_to_char_array(arr, "%s%s\n", indent, pop_to_rax);
+      print_to_char_array(arr, "%s%s\n", indent, sign_extend);
+      print_to_char_array(arr, "%s%s\n", indent, divide_by_ecx);
     } break;
     }
   }

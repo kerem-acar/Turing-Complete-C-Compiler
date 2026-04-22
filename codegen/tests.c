@@ -36,17 +36,16 @@ void run_test_case(char *test_case_path, char *test_result_path, int id) {
   assert(generate_function(prog, test_result_path, char_arr, id) == 1);
 }
 
-
 int main() {
   int id = 1;
 
-  run_test_case("test_cases/test_case4.c", "codegen/test1_result.s", id);
+  run_test_case("test_cases/test_case7.c", "codegen/test1_result.s", id);
   id += 1;
 
-  run_test_case("test_cases/test_case5.c", "codegen/test2_result.s", id);
+  run_test_case("test_cases/test_case8.c", "codegen/test2_result.s", id);
   id += 1;
   
-  run_test_case("test_cases/test_case6.c", "codegen/test3_result.s", id);
+  run_test_case("test_cases/test_case9.c", "codegen/test3_result.s", id);
   id += 1;
   
   printf("All tests passed");
