@@ -12,15 +12,33 @@ Parser *initialize_parser(TokenArray *arr) {
   return p;
 }
 
+Token get_token(Parser *p) {
+  return p->arr->array[p->i];
+}
+
 int compare_kind(Parser *p, TOK kind) {
-  if (p->arr->array[p->i].kind != kind) {
+  if (get_token(p).kind != kind) {
     return 0;
   }
   return 1;
 }
 
+void advance(Parser *p) {
+  p->i++;
+}
+
+int match_token(Parser *p, TOK kind) {
+  if (!compare_kind(p, kind)) {
+    return 0;
+  }
+
+  advance(p);
+
+  return 1;
+}
+
 int is_unop(Parser *p) {
-  switch(p->arr->array[p->i].kind) {
+  switch(get_token(p).kind) {
   case TOK_LOGNEG:
   case TOK_NEGATION:
   case TOK_BITCOMP: {
@@ -31,26 +49,26 @@ int is_unop(Parser *p) {
   return 0;
 }
 
-AST_Expression *initialize_constant(Parser *p) {
+AST_Expression *create_constant(Parser *p) {
   AST_Expression *exp = malloc(sizeof(AST_Expression));
   
   exp->kind = EXP_CONSTANT;
-  exp->Constant = p->arr->array[p->i].literal;
+  exp->Constant = get_token(p).literal;
 
   return exp;
 }
 
-AST_Expression *initialize_unop(Parser *p) {
+AST_Expression *create_unop(Parser *p) {
   AST_Expression *exp = malloc(sizeof(AST_Expression));
 
   exp->kind = EXP_UN_OP;
-  exp->UnOp.un_op = p->arr->array[p->i];  
+  exp->UnOp.un_op = get_token(p);  
   exp->UnOp.exp = NULL;
 
   return exp;
 }
 
-AST_Expression *initialize_binop(AST_Expression *left, AST_Expression *right, Token op) {
+AST_Expression *create_binop(AST_Expression *left, AST_Expression *right, Token op) {
   AST_Expression *exp = malloc(sizeof(AST_Expression));
 
   exp->kind = EXP_BIN_OP;
@@ -64,23 +82,21 @@ AST_Expression *initialize_binop(AST_Expression *left, AST_Expression *right, To
 AST_Expression *parse_expression(Parser *p);
 
 AST_Expression *parse_factor(Parser *p) {
-  p->i++;
-
   AST_Expression *exp;
 
-  if (compare_kind(p, TOK_LPAREN)) {
+  if (match_token(p, TOK_LPAREN)) {
     exp = parse_expression(p);
 
-    if (p->arr->array[p->i + 1].kind != TOK_RPAREN) {
+    if (!match_token(p, TOK_RPAREN)) {
       assert(0);
     }
-
-    p->i++;
   } else if (is_unop(p)) {
-    exp = initialize_unop(p);
+    exp = create_unop(p);
+    advance(p);
     exp->UnOp.exp = parse_factor(p);
   } else if (compare_kind(p, TOK_INTLIT)) {
-    exp = initialize_constant(p);
+    exp = create_constant(p);
+    advance(p);
   } else {
     assert(0);
   }
@@ -91,17 +107,17 @@ AST_Expression *parse_factor(Parser *p) {
 AST_Expression *parse_term(Parser *p) {
   AST_Expression *exp1 = parse_factor(p);
 
-  Token next = p->arr->array[p->i + 1];
+  Token curr = get_token(p);
 
-  while (next.kind == TOK_MULTIPLY || next.kind == TOK_DIVIDE) {
-    p->i++;
+  while (curr.kind == TOK_MULTIPLY || curr.kind == TOK_DIVIDE) {
+    advance(p);
     AST_Expression *exp2 = parse_factor(p);
 
-    AST_Expression *new_bin_op = initialize_binop(exp1, exp2, next);
+    AST_Expression *new_bin_op = create_binop(exp1, exp2, curr);
     
     exp1 = new_bin_op;
     
-    next = p->arr->array[p->i + 1];
+    curr = get_token(p);
   }
 
   return exp1;
@@ -110,24 +126,24 @@ AST_Expression *parse_term(Parser *p) {
 AST_Expression *parse_expression(Parser *p) {
   AST_Expression *exp1 = parse_term(p);
 
-  Token next = p->arr->array[p->i + 1];
+  Token curr = get_token(p);
 
-  while (next.kind == TOK_ADD || next.kind == TOK_NEGATION) {
-    p->i++;
+  while (curr.kind == TOK_ADD || curr.kind == TOK_NEGATION) {
+    advance(p);
     AST_Expression *exp2 = parse_term(p);
 
-    AST_Expression *new_bin_op = initialize_binop(exp1, exp2, next);
+    AST_Expression *new_bin_op = create_binop(exp1, exp2, curr);
 
     exp1 = new_bin_op;
 
-    next = p->arr->array[p->i + 1];
+    curr = get_token(p);
   }
 
   return exp1;
 }
 
 int parse_statement(Parser *p, AST_Function *func) {
-  if (!compare_kind(p, TOK_RETKEY)) {
+  if (!match_token(p, TOK_RETKEY)) {
     return 0;
   }
 
@@ -137,26 +153,19 @@ int parse_statement(Parser *p, AST_Function *func) {
 
   stat->exp = parse_expression(p);
 
-  p->i++;
-
-  if (!compare_kind(p, TOK_SEMICOL)) {
+  if (!match_token(p, TOK_SEMICOL)) {
     return 0;
   }
-
-  p->i++;
 
   return 1;
 }
 
 int parse_function(Parser *p, AST_Program *prog) {
-  if (!compare_kind(p, TOK_INTKEY)) {
+  if (!match_token(p, TOK_INTKEY)) {
     return 0;
   }
 
-  p->i++;
-
-  if (!compare_kind(p, TOK_ID) ||
-      strcmp(p->arr->array[p->i].literal, "main") != 0) {
+  if (strcmp(get_token(p).literal, "main") != 0 || !match_token(p, TOK_ID)) {
     return 0;
   }
 
@@ -166,35 +175,25 @@ int parse_function(Parser *p, AST_Program *prog) {
 
   func->name = "main";
 
-  p->i++;
-
-  if (!compare_kind(p, TOK_LPAREN)) {
+  if (!match_token(p, TOK_LPAREN)) {
     return 0;
   }
 
-  p->i++;
-
-  if (!compare_kind(p, TOK_RPAREN)) {
+  if (!match_token(p, TOK_RPAREN)) {
     return 0;
   }
 
-  p->i++;
-
-  if (!compare_kind(p, TOK_LCURLY)) {
+  if (!match_token(p, TOK_LCURLY)) {
     return 0;
   }
-
-  p->i++;
 
   if (!parse_statement(p, func)) {
     return 0;
   }
 
-  if (!compare_kind(p, TOK_RCURLY)) {
+  if (!match_token(p, TOK_RCURLY)) {
     return 0;
   }
-
-  p->i++;
 
   return 1;
 }
