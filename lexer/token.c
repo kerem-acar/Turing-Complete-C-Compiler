@@ -14,7 +14,15 @@ typedef enum TOK {
   TOK_LOGNEG,
   TOK_ADD,
   TOK_MULTIPLY,
-  TOK_DIVIDE
+  TOK_DIVIDE,
+  TOK_LOGAND,
+  TOK_LOGOR,
+  TOK_LOGEQ,
+  TOK_LOGNEQ,
+  TOK_LOGLE,
+  TOK_LOGLEQ,
+  TOK_LOGGE,
+  TOK_LOGGEQ
 } TOK;
 
 typedef struct Token {

@@ -9,7 +9,7 @@ int lex(const char *src, TokenArray *result) {
 
   StrMap_init(&keyword_map, 2);
   StrMap_init(&char_map, 5);
-  StrMap_init(&operator_map, 6);
+  StrMap_init(&operator_map, 14);
 
   StrMap_insert(&keyword_map, "return", TOK_RETKEY);
   StrMap_insert(&keyword_map, "int", TOK_INTKEY);
@@ -26,6 +26,14 @@ int lex(const char *src, TokenArray *result) {
   StrMap_insert(&operator_map, "+", TOK_ADD);
   StrMap_insert(&operator_map, "*", TOK_MULTIPLY);
   StrMap_insert(&operator_map, "/", TOK_DIVIDE);
+  StrMap_insert(&operator_map, "&&", TOK_LOGAND);
+  StrMap_insert(&operator_map, "||", TOK_LOGOR);
+  StrMap_insert(&operator_map, "==", TOK_LOGEQ);
+  StrMap_insert(&operator_map, "!=", TOK_LOGNEQ);
+  StrMap_insert(&operator_map, "<", TOK_LOGLE);
+  StrMap_insert(&operator_map, "<=", TOK_LOGLEQ);
+  StrMap_insert(&operator_map, ">", TOK_LOGGE);
+  StrMap_insert(&operator_map, ">=", TOK_LOGGEQ);
 
   while (*src) {
     if (isspace(*src)) {
@@ -65,13 +73,31 @@ int lex(const char *src, TokenArray *result) {
       continue;
     }
 
-    char *word = malloc(sizeof(char) * 2);
+    CharArray *word = initialize_char_array(1);
 
-    word[0] = (*src);
-    word[1] = '\0';
+    push_back_char(word, (*src));
 
-    FindRes char_res = StrMap_find(&char_map, word);
-    FindRes operator_res = StrMap_find(&operator_map, word);
+    if ((*src) == '<' || (*src) == '>' || (*src) == '!' || (*src) == '=') {
+      if (*(src + 1) == '=') {
+        src++;
+        push_back_char(word, (*src));
+      }
+    }
+
+    if ((*src) == '&' && (*(src + 1)) == '&') {
+      src++;
+      push_back_char(word, (*src));
+    }
+
+    if ((*src) == '|' && (*(src + 1)) == '|') {
+      src++;
+      push_back_char(word, (*src));
+    }
+
+    push_back_char(word, '\0');
+
+    FindRes char_res = StrMap_find(&char_map, word->array);
+    FindRes operator_res = StrMap_find(&operator_map, word->array);
 
     if (operator_res.found) {
       tok.kind = operator_res.val;
@@ -80,7 +106,7 @@ int lex(const char *src, TokenArray *result) {
     } else {
       tok.kind = TOK_UNK;
     }
-    tok.literal = word;
+    tok.literal = word->array;
     push_back_token(result, tok);
     src++;
   }

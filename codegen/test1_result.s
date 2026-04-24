@@ -9,5 +9,6 @@ main1:
     pop rcx
     add eax, ecx
     pop rcx
-    add eax, ecx
+    sub ecx, eax
+    mov eax, ecx
     ret

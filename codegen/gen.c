@@ -69,7 +69,7 @@ void generate_expression(AST_Expression *exp, CharArray *arr) {
       print_to_char_array(arr, "%s%s\n", indent, pop_to_rcx);
       print_to_char_array(arr, "%s%s\n", indent, mul_eax_ecx);
     } break;
-    case TOK_LOGNEG: {
+    case TOK_NEGATION: {
       print_to_char_array(arr, "%s%s\n", indent, pop_to_rcx);
       print_to_char_array(arr, "%s%s\n", indent, sub_ecx_eax);
       print_to_char_array(arr, "%s%s\n", indent, mov_ecx_eax);
