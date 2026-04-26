@@ -8,7 +8,6 @@
 #include "../lexer/token.c"
 #include "../C_array/char_array.c"
 #include "../C_array/token_array.c"
-#include "../C_map/map.c"
 #include "../lexer/lex.c"
 #include "../lexer/read_file.c"
 
@@ -23,7 +22,9 @@ void run_test_case(char *test_case_path, TokenArray *expected) {
 
   for (unsigned int i = 0; i < arr->size; ++i) {
     assert(arr->array[i].kind == expected->array[i].kind);
-    assert(!strcmp(arr->array[i].literal, expected->array[i].literal));
+    if (arr->array[i].kind == TOK_INTLIT || arr->array[i].kind == TOK_ID) {
+      assert(!strcmp(arr->array[i].literal, expected->array[i].literal));
+    }
   }
 }
 

@@ -3,38 +3,6 @@ int lex(const char *src, TokenArray *result) {
     return 0;
   }
 
-  StrMap keyword_map;
-  StrMap char_map;
-  StrMap operator_map;
-
-  StrMap_init(&keyword_map, 2);
-  StrMap_init(&char_map, 5);
-  StrMap_init(&operator_map, 14);
-
-  StrMap_insert(&keyword_map, "return", TOK_RETKEY);
-  StrMap_insert(&keyword_map, "int", TOK_INTKEY);
-
-  StrMap_insert(&char_map, "(", TOK_LPAREN);
-  StrMap_insert(&char_map, ")", TOK_RPAREN);
-  StrMap_insert(&char_map, "{", TOK_LCURLY);
-  StrMap_insert(&char_map, "}", TOK_RCURLY);
-  StrMap_insert(&char_map, ";", TOK_SEMICOL);
-
-  StrMap_insert(&operator_map, "~", TOK_BITCOMP);
-  StrMap_insert(&operator_map, "!", TOK_LOGNEG);
-  StrMap_insert(&operator_map, "-", TOK_NEGATION);
-  StrMap_insert(&operator_map, "+", TOK_ADD);
-  StrMap_insert(&operator_map, "*", TOK_MULTIPLY);
-  StrMap_insert(&operator_map, "/", TOK_DIVIDE);
-  StrMap_insert(&operator_map, "&&", TOK_LOGAND);
-  StrMap_insert(&operator_map, "||", TOK_LOGOR);
-  StrMap_insert(&operator_map, "==", TOK_LOGEQ);
-  StrMap_insert(&operator_map, "!=", TOK_LOGNEQ);
-  StrMap_insert(&operator_map, "<", TOK_LOGLE);
-  StrMap_insert(&operator_map, "<=", TOK_LOGLEQ);
-  StrMap_insert(&operator_map, ">", TOK_LOGGE);
-  StrMap_insert(&operator_map, ">=", TOK_LOGGEQ);
-
   while (*src) {
     if (isspace(*src)) {
       src++;
@@ -61,52 +29,100 @@ int lex(const char *src, TokenArray *result) {
       }
       push_back_char(word, '\0');
 
-      FindRes res = StrMap_find(&keyword_map, word->array);
-
-      if (res.found) {
-        tok.kind = res.val;
+      if (!strcmp(word->array, "return")) {
+        tok.kind = TOK_RETKEY;
+        delete_char_array(&word);
+      } else if (!strcmp(word->array, "int")) {
+        tok.kind = TOK_INTKEY;
+        delete_char_array(&word);
       } else {
         tok.kind = TOK_ID;
-      }
-      tok.literal = word->array;
+        tok.literal = word->array;
+        free(word);
+      }   
+
       push_back_token(result, tok);
       continue;
     }
 
-    CharArray *word = initialize_char_array(1);
-
-    push_back_char(word, (*src));
-
-    if ((*src) == '<' || (*src) == '>' || (*src) == '!' || (*src) == '=') {
+    switch((*src)) {
+    case '{': {
+      tok.kind = TOK_LCURLY;
+    } break;
+    case '}': {
+      tok.kind = TOK_RCURLY;
+    } break;
+    case '(': {
+      tok.kind = TOK_LPAREN;
+    } break;
+    case ')': {
+      tok.kind = TOK_RPAREN;
+    } break;
+    case ';': {
+      tok.kind = TOK_SEMICOL;
+    } break;
+    case '-': {
+      tok.kind = TOK_NEGATION;
+    } break;
+    case '~': {
+      tok.kind = TOK_BITCOMP;
+    } break;
+    case '!': {
       if (*(src + 1) == '=') {
         src++;
-        push_back_char(word, (*src));
+        tok.kind = TOK_LOGNEQ; 
+      } else {
+        tok.kind = TOK_LOGNEG;
       }
-    }
-
-    if ((*src) == '&' && (*(src + 1)) == '&') {
-      src++;
-      push_back_char(word, (*src));
-    }
-
-    if ((*src) == '|' && (*(src + 1)) == '|') {
-      src++;
-      push_back_char(word, (*src));
-    }
-
-    push_back_char(word, '\0');
-
-    FindRes char_res = StrMap_find(&char_map, word->array);
-    FindRes operator_res = StrMap_find(&operator_map, word->array);
-
-    if (operator_res.found) {
-      tok.kind = operator_res.val;
-    } else if (char_res.found) {
-      tok.kind = char_res.val;
-    } else {
+    } break;
+    case '+': {
+      tok.kind = TOK_ADD;
+    } break;
+    case '*': {
+      tok.kind = TOK_MULTIPLY;
+    } break;
+    case '/': {
+      tok.kind = TOK_DIVIDE;
+    } break;
+    case '&': {
+      if (*(src + 1) == '&') {
+        src++;
+        tok.kind = TOK_LOGAND;
+      }
+    } break;
+    case '|': {
+      if (*(src + 1) == '|') {
+        src++;
+        tok.kind = TOK_LOGOR;
+      }
+    } break;
+    case '=': {
+      if (*(src + 1) == '=') {
+        src++;
+        tok.kind = TOK_LOGEQ;
+      }
+    } break;
+    case '<': {
+      if (*(src + 1) == '=') {
+        src++;
+        tok.kind = TOK_LOGLEQ;
+      } else {
+        tok.kind = TOK_LOGLE;
+      }
+    } break;
+    case '>': {
+      if (*(src + 1) == '=') {
+        src++;
+        tok.kind = TOK_LOGGEQ;
+      } else {
+        tok.kind = TOK_LOGGE;
+      }
+    } break;
+    default: {
       tok.kind = TOK_UNK;
+    } break;
     }
-    tok.literal = word->array;
+
     push_back_token(result, tok);
     src++;
   }
