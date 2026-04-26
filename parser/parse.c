@@ -123,7 +123,7 @@ AST_Expression *parse_term(Parser *p) {
   return exp1;
 }
 
-AST_Expression *parse_expression(Parser *p) {
+AST_Expression *parse_additive_expression(Parser *p) {
   AST_Expression *exp1 = parse_term(p);
 
   Token curr = get_token(p);
@@ -131,6 +131,82 @@ AST_Expression *parse_expression(Parser *p) {
   while (curr.kind == TOK_ADD || curr.kind == TOK_NEGATION) {
     advance(p);
     AST_Expression *exp2 = parse_term(p);
+
+    AST_Expression *new_bin_op = create_binop(exp1, exp2, curr);
+
+    exp1 = new_bin_op;
+
+    curr = get_token(p);
+  }
+
+  return exp1;
+}
+
+AST_Expression *parse_relational_expression(Parser *p) {
+  AST_Expression *exp1 = parse_additive_expression(p);
+
+  Token curr = get_token(p);
+
+  while (curr.kind == TOK_LOGLE || curr.kind == TOK_LOGLEQ || curr.kind == TOK_LOGGE || curr.kind == TOK_LOGGEQ) {
+    advance(p);
+    AST_Expression *exp2 = parse_additive_expression(p);
+
+    AST_Expression *new_bin_op = create_binop(exp1, exp2, curr);
+
+    exp1 = new_bin_op;
+
+    curr = get_token(p);
+  }
+
+  return exp1;
+}
+
+AST_Expression *parse_equality_expression(Parser *p) {
+  AST_Expression *exp1 = parse_relational_expression(p);
+
+  Token curr = get_token(p);
+
+  while (curr.kind == TOK_LOGNEQ || curr.kind == TOK_LOGEQ) {
+    advance(p);
+    AST_Expression *exp2 = parse_relational_expression(p);
+
+    AST_Expression *new_bin_op = create_binop(exp1, exp2, curr);
+
+    exp1 = new_bin_op;
+
+    curr = get_token(p);
+  }
+
+  return exp1;
+}
+
+AST_Expression *parse_logical_and_expression(Parser *p) {
+  AST_Expression *exp1 = parse_equality_expression(p);
+
+  Token curr = get_token(p);
+
+  while (curr.kind == TOK_LOGAND) {
+    advance(p);
+    AST_Expression *exp2 = parse_equality_expression(p);
+
+    AST_Expression *new_bin_op = create_binop(exp1, exp2, curr);
+
+    exp1 = new_bin_op;
+
+    curr = get_token(p);
+  }
+
+  return exp1;
+}
+
+AST_Expression *parse_expression(Parser *p) {
+  AST_Expression *exp1 = parse_logical_and_expression(p);
+
+  Token curr = get_token(p);
+
+  while (curr.kind == TOK_LOGOR) {
+    advance(p);
+    AST_Expression *exp2 = parse_logical_and_expression(p);
 
     AST_Expression *new_bin_op = create_binop(exp1, exp2, curr);
 

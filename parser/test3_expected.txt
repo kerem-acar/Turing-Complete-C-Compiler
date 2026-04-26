@@ -1,8 +1,10 @@
 Program
   Function (Name: main)
     Return statement
-      Expression (Binary Operator: /)
-        Expression (Constant: 6)
-        Expression (Binary Operator: *)
+      Expression (Binary Operator: ||)
+        Expression (Binary Operator: ==)
           Expression (Constant: 3)
-          Expression (Constant: 2)
+          Expression (Constant: 10)
+        Expression (Binary Operator: !=)
+          Expression (Constant: 9)
+          Expression (Constant: 11)
