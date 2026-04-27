@@ -39,7 +39,7 @@ int push_key(int val, int *arr, int size) {
 }
 
 void run_test_case(int size, double loading) {
-  srand(time(NULL));
+  srand(1);
   
   int *arr = start_experiment(size);
   
