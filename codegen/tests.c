@@ -9,7 +9,6 @@
 #include "../lexer/token.c"
 #include "../C_array/token_array.c"
 #include "../C_array/char_array.c"
-#include "../C_map/map.c"
 #include "../lexer/lex.c"
 #include "../lexer/read_file.c"
 #include "../parser/ast.c"
@@ -39,13 +38,13 @@ void run_test_case(char *test_case_path, char *test_result_path, int id) {
 int main() {
   int id = 1;
 
-  run_test_case("test_cases/test_case7.c", "codegen/test1_result.s", id);
+  run_test_case("test_cases/test_case10.c", "codegen/test1_result.s", id);
   id += 1;
 
-  run_test_case("test_cases/test_case8.c", "codegen/test2_result.s", id);
+  run_test_case("test_cases/test_case11.c", "codegen/test2_result.s", id);
   id += 1;
   
-  run_test_case("test_cases/test_case9.c", "codegen/test3_result.s", id);
+  run_test_case("test_cases/test_case12.c", "codegen/test3_result.s", id);
   id += 1;
   
   printf("All tests passed");
