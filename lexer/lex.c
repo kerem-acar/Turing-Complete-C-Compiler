@@ -8,25 +8,32 @@ int lex(const char *src, TokenArray *result) {
       src++;
       continue;
     }
+
     Token tok;
+
     if (isdigit(*src)) {
       CharArray *number = initialize_char_array(1);
+
       while (*src && isdigit(*src)) {
         push_back_char(number, (*src));
         src++;
       }
+
       push_back_char(number, '\0');
       tok.kind = TOK_INTLIT;
       tok.literal = number->array;
       push_back_token(result, tok);
       continue;
     }
+
     if (isalpha(*src)) {
       CharArray *word = initialize_char_array(1);
+
       while (*src && isalpha(*src)) {
         push_back_char(word, (*src));
         src++;
       }
+      
       push_back_char(word, '\0');
 
       if (!strcmp(word->array, "return")) {

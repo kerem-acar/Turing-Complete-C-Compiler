@@ -11,7 +11,7 @@ main2:
     cmp eax, 0
     je clause1
     mov eax, 1
-    jmp end
+    jmp end1
 clause1:
     mov eax, 2
     push rax
@@ -23,5 +23,5 @@ clause1:
     cmp eax, 0
     mov eax, 0
     setne al
-end:
+end1:
     ret
