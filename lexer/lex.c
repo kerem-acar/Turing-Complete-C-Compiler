@@ -107,6 +107,8 @@ int lex(const char *src, TokenArray *result) {
       if (*(src + 1) == '=') {
         src++;
         tok.kind = TOK_LOGEQ;
+      } else {
+        tok.kind = TOK_ASSIGN;
       }
     } break;
     case '<': {

@@ -28,7 +28,8 @@ typedef enum TOK {
   TOK_LOGOR,
   __BIN_JUNC_END__,
   TOK_DIVIDE,
-  TOK_UNK
+  TOK_UNK,
+  TOK_ASSIGN
 } TOK;
 
 typedef struct Token {
