@@ -11,7 +11,4 @@ def generate_new_array(result_file_path, type, name, prefix):
     with open(result_file_path, 'w') as f:
         f.write(source_code)
 
-
-generate_new_array("int_array.c", "int", "int", "Int")
-generate_new_array("char_array.c", "char", "char", "Char")
-generate_new_array("token_array.c", "Token", "token", "Token")
+generate_new_array("statement_array.c", "AST_Statement", "stat", "Stat")

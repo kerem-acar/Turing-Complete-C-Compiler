@@ -1,10 +1,6 @@
 Program
   Function (Name: main)
+    Variable declaration (Name: a)
+      Expression (Constant: 3)
     Return statement
-      Expression (Binary Operator: &&)
-        Expression (Binary Operator: <)
-          Expression (Constant: 1)
-          Expression (Constant: 3)
-        Expression (Binary Operator: >)
-          Expression (Constant: 4)
-          Expression (Constant: 2)
+      Reference (Variable: a)

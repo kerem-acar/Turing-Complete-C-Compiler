@@ -68,13 +68,9 @@ void generate_expression(AST_Expression *exp, CharArray *arr, int *clause_id, in
     if (__BIN_JUNC_START__ > exp->BinOp.bin_op.kind || exp->BinOp.bin_op.kind > __BIN_JUNC_END__) {
       print_to_char_array(arr, "%s%s\n", indent, push_from_rax);
       generate_expression(exp->BinOp.right_exp, arr, clause_id, end_id);
-    }
-
-    if (__BIN_ARITH_START__ < exp->BinOp.bin_op.kind && exp->BinOp.bin_op.kind < __BIN_RELAT_END__) {
+    } else if (__BIN_ARITH_START__ < exp->BinOp.bin_op.kind && exp->BinOp.bin_op.kind < __BIN_RELAT_END__) {
       print_to_char_array(arr, "%s%s\n", indent, pop_to_rcx);
-    }
-
-    if (__BIN_RELAT_START__ < exp->BinOp.bin_op.kind && exp->BinOp.bin_op.kind < __BIN_RELAT_END__) {
+    } else if (__BIN_RELAT_START__ < exp->BinOp.bin_op.kind && exp->BinOp.bin_op.kind < __BIN_RELAT_END__) {
       print_to_char_array(arr, "%s%s\n", indent, compare_ecx_to_eax);
       print_to_char_array(arr, "%s%s%c\n", indent, move_to_eax, '0');
     }

@@ -27,7 +27,7 @@ void print_expression_node(AST_Expression *exp, int indent, FILE *fp) {
     } break;
     }
     print_expression_node(exp->UnOp.exp, indent + 2, fp);
-  } else {
+  } else if (exp->kind == EXP_BIN_OP) {
     switch(exp->BinOp.bin_op.kind) {
     case TOK_ADD: {
       printf("Expression (Binary Operator: %c)\n", '+');
@@ -81,16 +81,39 @@ void print_expression_node(AST_Expression *exp, int indent, FILE *fp) {
     
     print_expression_node(exp->BinOp.left_exp, indent + 2, fp);
     print_expression_node(exp->BinOp.right_exp, indent + 2, fp);
+  } else if (exp->kind == EXP_ASSIGN) {
+    printf("Assign (Variable: %s)\n", exp->Assign.name);
+    fprintf(fp, "Assign (Variable: %s)\n", exp->Assign.name);
+
+    print_expression_node(exp->Assign.exp, indent + 2, fp);
+  } else {
+    printf("Reference (Variable: %s)\n", exp->Reference.name);
+    fprintf(fp, "Reference (Variable: %s)\n", exp->Reference.name);
   }
 }
 
 void print_statement_node(AST_Statement *stat, int indent, FILE *fp) {
   print_indent(indent, fp);
+  
+  if (stat->kind == STAT_RETURN) {
+    printf("Return statement\n");
+    fprintf(fp, "Return statement\n");
 
-  printf("Return statement\n");
-  fprintf(fp, "Return statement\n");
+  print_expression_node(stat->Return.exp, indent + 2, fp);
+  } else if (stat->kind == STAT_DECLARE) {
+    printf("Variable declaration (Name: %s)\n", stat->Declare.name);
+    fprintf(fp, "Variable declaration (Name: %s)\n", stat->Declare.name);
+    
+    if (stat->Declare.exp != NULL) {
+      print_expression_node(stat->Declare.exp, indent + 2, fp);
+    }
+  } else {
+    printf("Variable assignment (Name: %s)\n", stat->Expression.exp->Assign.name);
+    fprintf(fp, "Variable assignment\n");
 
-  print_expression_node(stat->exp, indent + 2, fp);
+    print_expression_node(stat->Expression.exp, indent + 2, fp);
+  }
+
 }
 
 void print_function_node(AST_Function *func, int indent, FILE *fp) {
@@ -99,7 +122,9 @@ void print_function_node(AST_Function *func, int indent, FILE *fp) {
   printf("Function (Name: %s)\n", func->name);
   fprintf(fp, "Function (Name: %s)\n", func->name);
 
-  print_statement_node(func->body, indent + 2, fp);
+  for (unsigned int i = 0; i < func->body->size; ++i) {
+    print_statement_node(&func->body->array[i], indent + 2, fp);
+  }
 }
 
 void print_program_node(AST_Program *prog, char *result_file_path) {

@@ -1,10 +1,10 @@
 Program
   Function (Name: main)
+    Variable declaration (Name: a)
+      Expression (Constant: 3)
+    Variable declaration (Name: b)
+      Expression (Binary Operator: +)
+        Reference (Variable: a)
+        Expression (Constant: 4)
     Return statement
-      Expression (Binary Operator: ||)
-        Expression (Binary Operator: ==)
-          Expression (Constant: 3)
-          Expression (Constant: 10)
-        Expression (Binary Operator: !=)
-          Expression (Constant: 9)
-          Expression (Constant: 11)
+      Reference (Variable: b)
