@@ -83,6 +83,24 @@ AST_Expression *create_binop(AST_Expression *left, AST_Expression *right, Token 
   return exp;
 }
 
+AST_Expression *create_reference(Parser *p) {
+  AST_Expression *exp = malloc(sizeof(AST_Expression));
+
+  exp->kind = EXP_REF;
+  exp->Reference = get_token(p).literal;
+
+  return exp;
+}
+
+AST_Expression *create_assignment(Parser *p) {
+  AST_Expression *exp = malloc(sizeof(AST_Expression));
+
+  exp->kind = EXP_ASSIGN;
+  exp->Assign.name = get_token(p).literal;
+
+  return exp;
+}
+
 AST_Expression *parse_expression(Parser *p);
 
 AST_Expression *parse_factor(Parser *p) {
@@ -102,11 +120,7 @@ AST_Expression *parse_factor(Parser *p) {
     exp = create_constant(p);
     advance(p);
   } else if (compare_kind(p, TOK_ID)) {
-    exp = malloc(sizeof(AST_Expression));
-
-    exp->kind = EXP_REF;
-    exp->Reference.name = get_token(p).literal;
-
+    exp = create_reference(p);
     advance(p);
   } else {
     assert(0);
@@ -233,10 +247,7 @@ AST_Expression *parse_expression(Parser *p) {
   AST_Expression *exp;
   
   if (compare_kind(p, TOK_ID) && get_next_token(p).kind == TOK_ASSIGN) {
-    exp = malloc(sizeof(AST_Expression));
-
-    exp->kind = EXP_ASSIGN;
-    exp->Assign.name = get_token(p).literal;
+    exp = create_assignment(p);
     advance(p);
 
     if (!match_token(p, TOK_ASSIGN)) {
@@ -254,10 +265,9 @@ AST_Expression *parse_expression(Parser *p) {
 int parse_statement(Parser *p, AST_Function *func) {
   AST_Statement *stat = malloc(sizeof(AST_Statement));
 
-  
   if (match_token(p, TOK_RETKEY)) {
     stat->kind = STAT_RETURN;
-    stat->Return.exp = parse_expression(p);
+    stat->Return = parse_expression(p);
   } else if (match_token(p, TOK_INTKEY)) {
     stat->kind = STAT_DECLARE;
 
@@ -275,7 +285,7 @@ int parse_statement(Parser *p, AST_Function *func) {
     }
   } else {
     stat->kind = STAT_EXP;
-    stat->Expression.exp = parse_expression(p);
+    stat->Expression = parse_expression(p);
   }
 
   if (!match_token(p, TOK_SEMICOL)) {

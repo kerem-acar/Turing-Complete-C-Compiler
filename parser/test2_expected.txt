@@ -1,7 +1,7 @@
 Program
   Function (Name: main)
     Variable declaration (Name: a)
-    Variable assignment
+    Expression statement
       Assign (Variable: a)
         Expression (Constant: 4)
     Return statement

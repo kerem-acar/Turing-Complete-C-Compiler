@@ -7,9 +7,7 @@
 
 #include "../parser/compare_strings.c"
 #include "../lexer/token.c"
-#include "../parser/ast_first_half.c"
-#include "../C_array/statement_array.c"
-#include "../parser/ast_second_half.c"
+#include "../parser/ast.c"
 #include "../C_array/char_array.c"
 #include "../C_array/token_array.c"
 #include "../lexer/lex.c"

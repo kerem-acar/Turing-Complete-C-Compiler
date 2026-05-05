@@ -21,9 +21,7 @@ typedef struct AST_Expression {
       struct AST_Expression *exp;
     } Assign;
 
-    struct {
-      char *name;
-    } Reference;
+    char *Reference;
 
     struct {
       Token bin_op;
@@ -44,18 +42,24 @@ typedef struct AST_Statement {
   StatKind kind;
   
   union {
-    struct {
-      struct AST_Expression *exp;
-    } Return;
+    AST_Expression *Return;
 
     struct {
       char *name;
       struct AST_Expression *exp;
     } Declare;
 
-    struct {
-      struct AST_Expression *exp;
-    } Expression;
-
+    AST_Expression *Expression;
   };  
 } AST_Statement;
+
+#include "../C_array/statement_array.c"
+
+typedef struct AST_Function {
+  StatArray *body;
+  char *name;
+} AST_Function;
+
+typedef struct AST_Program {
+  AST_Function *func;
+} AST_Program;

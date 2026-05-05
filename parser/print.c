@@ -87,8 +87,8 @@ void print_expression_node(AST_Expression *exp, int indent, FILE *fp) {
 
     print_expression_node(exp->Assign.exp, indent + 2, fp);
   } else {
-    printf("Reference (Variable: %s)\n", exp->Reference.name);
-    fprintf(fp, "Reference (Variable: %s)\n", exp->Reference.name);
+    printf("Reference (Variable: %s)\n", exp->Reference);
+    fprintf(fp, "Reference (Variable: %s)\n", exp->Reference);
   }
 }
 
@@ -99,7 +99,7 @@ void print_statement_node(AST_Statement *stat, int indent, FILE *fp) {
     printf("Return statement\n");
     fprintf(fp, "Return statement\n");
 
-  print_expression_node(stat->Return.exp, indent + 2, fp);
+  print_expression_node(stat->Return, indent + 2, fp);
   } else if (stat->kind == STAT_DECLARE) {
     printf("Variable declaration (Name: %s)\n", stat->Declare.name);
     fprintf(fp, "Variable declaration (Name: %s)\n", stat->Declare.name);
@@ -108,10 +108,10 @@ void print_statement_node(AST_Statement *stat, int indent, FILE *fp) {
       print_expression_node(stat->Declare.exp, indent + 2, fp);
     }
   } else {
-    printf("Variable assignment (Name: %s)\n", stat->Expression.exp->Assign.name);
-    fprintf(fp, "Variable assignment\n");
+    printf("Expression statement\n");
+    fprintf(fp, "Expression statement\n");
 
-    print_expression_node(stat->Expression.exp, indent + 2, fp);
+    print_expression_node(stat->Expression, indent + 2, fp);
   }
 
 }
