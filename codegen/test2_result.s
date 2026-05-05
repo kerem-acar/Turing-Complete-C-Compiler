@@ -1,27 +1,17 @@
 .intel_syntax noprefix
 .globl main2
 main2:
-    mov eax, 1
+    push rbp
+    mov rbp, rsp
+    mov eax, 0
     push rax
-    mov eax, 0
-    pop rcx
-    cmp ecx, eax
-    mov eax, 0
-    setge al
-    cmp eax, 0
-    je clause1
-    mov eax, 1
-    jmp end1
-clause1:
-    mov eax, 2
+    mov eax, 4
+    mov dword ptr [rbp - 8], eax
+    mov eax, dword ptr [rbp - 8]
     push rax
-    mov eax, 8
+    mov eax, 3
     pop rcx
-    cmp ecx, eax
-    mov eax, 0
-    setle al
-    cmp eax, 0
-    mov eax, 0
-    setne al
-end1:
+    add eax, ecx
+    mov rsp, rbp
+    pop rbp
     ret
