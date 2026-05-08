@@ -22,6 +22,7 @@ int lex(const char *src, TokenArray *result) {
       push_back_char(number, '\0');
       tok.kind = TOK_INTLIT;
       tok.literal = number->array;
+      free(number);
       push_back_token(result, tok);
       continue;
     }
@@ -41,6 +42,12 @@ int lex(const char *src, TokenArray *result) {
         delete_char_array(&word);
       } else if (!strcmp(word->array, "int")) {
         tok.kind = TOK_INTKEY;
+        delete_char_array(&word);
+      } else if (!strcmp(word->array, "if")) {
+        tok.kind = TOK_IFKEY;
+        delete_char_array(&word);
+      } else if (!strcmp(word->array, "else")) {
+        tok.kind = TOK_ELSEKEY;
         delete_char_array(&word);
       } else {
         tok.kind = TOK_ID;
@@ -73,6 +80,12 @@ int lex(const char *src, TokenArray *result) {
     } break;
     case '~': {
       tok.kind = TOK_BITCOMP;
+    } break;
+    case ':': {
+      tok.kind = TOK_COLON;
+    } break;
+    case '?': {
+      tok.kind = TOK_QMARK;
     } break;
     case '!': {
       if (*(src + 1) == '=') {

@@ -1,22 +1,22 @@
 typedef struct {
-  AST_Statement *array;
+  AST_BlockItem *array;
   int capacity;
   int size;
-} StatArray;
+} BlockArray;
 
-StatArray *initialize_stat_array(int capacity) {
+BlockArray *initialize_block_array(int capacity) {
   assert(capacity > 0);
 
-  StatArray *arr = malloc(sizeof(StatArray));
+  BlockArray *arr = malloc(sizeof(BlockArray));
 
-  arr->array = malloc(capacity * sizeof(AST_Statement));
+  arr->array = malloc(capacity * sizeof(AST_BlockItem));
   arr->capacity = capacity;
   arr->size = 0;
 
   return arr;
 }
 
-void set_stat_array_index(StatArray *arr, int index, AST_Statement val) {
+void set_block_array_index(BlockArray *arr, int index, AST_BlockItem val) {
   assert(arr != NULL);
   assert(arr->array != NULL);
   assert(index >= 0 && index < arr->size);
@@ -24,11 +24,11 @@ void set_stat_array_index(StatArray *arr, int index, AST_Statement val) {
   arr->array[index] = val;
 }
 
-void push_back_stat(StatArray *arr, AST_Statement val) {
+void push_back_block(BlockArray *arr, AST_BlockItem val) {
   assert(arr != NULL);
   assert(arr->array != NULL);
   if (arr->size == arr->capacity) {
-    AST_Statement *tmp = malloc((arr->capacity * 2) * sizeof(AST_Statement));
+    AST_BlockItem *tmp = malloc((arr->capacity * 2) * sizeof(AST_BlockItem));
 
     for (int i = 0; i < arr->capacity; ++i) {
       tmp[i] = arr->array[i];
@@ -48,7 +48,7 @@ void push_back_stat(StatArray *arr, AST_Statement val) {
   }
 }
 
-void delete_stat_array(StatArray **arr) {
+void delete_block_array(BlockArray **arr) {
   assert(arr != NULL);
   assert((*arr) != NULL);
   assert((*arr)->array != NULL);

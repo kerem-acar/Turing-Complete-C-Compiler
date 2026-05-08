@@ -101,6 +101,17 @@ AST_Expression *create_assignment(Parser *p) {
   return exp;
 }
 
+AST_Expression *create_conditional_expression(AST_Expression *e1, AST_Expression *e2, AST_Expression *e3) {
+  AST_Expression *exp = malloc(sizeof(AST_Expression));
+  exp->kind = EXP_COND;
+  
+  exp->CondExp.e1 = e1;
+  exp->CondExp.e2 = e2;
+  exp->CondExp.e3 = e3;
+  
+  return exp;
+}
+
 AST_Expression *parse_expression(Parser *p);
 
 AST_Expression *parse_factor(Parser *p) {
@@ -243,6 +254,26 @@ AST_Expression *parse_logical_or_expression(Parser *p) {
   return exp1;
 }
 
+AST_Expression *parse_conditional_expression(Parser *p) {
+  AST_Expression *e1 = parse_logical_or_expression(p);
+  AST_Expression *e2 = NULL;
+  AST_Expression *e3 = NULL;
+
+  if (match_token(p, TOK_QMARK)) {
+    e2 = parse_expression(p);
+    
+    if (!match_token(p, TOK_COLON)) {
+      assert(0);
+    }
+
+    e3 = parse_conditional_expression(p);
+
+    return create_conditional_expression(e1, e2, e3);
+  }
+
+  return e1;
+}
+
 AST_Expression *parse_expression(Parser *p) {
   AST_Expression *exp;
   
@@ -256,43 +287,111 @@ AST_Expression *parse_expression(Parser *p) {
 
     exp->Assign.exp = parse_expression(p);
   } else {
-    exp = parse_logical_or_expression(p);
+    exp = parse_conditional_expression(p);
   }
 
   return exp;
 }
 
-int parse_statement(Parser *p, AST_Function *func) {
+AST_Statement *parse_statement(Parser *p) {
   AST_Statement *stat = malloc(sizeof(AST_Statement));
 
   if (match_token(p, TOK_RETKEY)) {
     stat->kind = STAT_RETURN;
     stat->Return = parse_expression(p);
-  } else if (match_token(p, TOK_INTKEY)) {
-    stat->kind = STAT_DECLARE;
 
-    if (compare_kind(p, TOK_ID)) {
-      stat->Declare.name = get_token(p).literal;
-      advance(p);
-    } else {
-      return 0;
+    if (!match_token(p, TOK_SEMICOL)) {
+      assert(0);
+    }
+  } else if (match_token(p, TOK_IFKEY)) {
+    stat->kind = STAT_IF;
+
+    if (!match_token(p, TOK_LPAREN)) {
+      assert(0);
     }
 
-    if (match_token(p, TOK_ASSIGN)) {
-      stat->Declare.exp = parse_expression(p);
+    stat->If.exp = parse_expression(p);
+
+    if (!match_token(p, TOK_RPAREN)) {
+      assert(0);
+    }
+
+    if (!match_token(p, TOK_LCURLY)) {
+      assert(0);
+    }
+
+    stat->If.stat = parse_statement(p);
+
+    if (!match_token(p, TOK_RCURLY)) {
+      assert(0);
+    }
+
+    if (match_token(p, TOK_ELSEKEY)) {
+      if (compare_kind(p, TOK_IFKEY)) {
+        stat->If.optional_stat = parse_statement(p);
+      } else {
+        if (!match_token(p, TOK_LCURLY)) {
+          assert(0);
+        }
+
+        stat->If.optional_stat = parse_statement(p);
+      
+        if (!match_token(p, TOK_RCURLY));
+      }
     } else {
-      stat->Declare.exp = NULL;
+      stat->If.optional_stat = NULL;
     }
   } else {
     stat->kind = STAT_EXP;
     stat->Expression = parse_expression(p);
+    
+    if (!match_token(p, TOK_SEMICOL)) {
+      assert(0);
+    }
   }
 
-  if (!match_token(p, TOK_SEMICOL)) {
-    return 0;
+  return stat;
+}
+
+AST_Declaration *parse_declaration(Parser *p) {
+  AST_Declaration *dec = malloc(sizeof(AST_Declaration));
+
+  if (match_token(p, TOK_INTKEY)) {
+    if (compare_kind(p, TOK_ID)) {
+      dec->name = get_token(p).literal;
+      advance(p);
+    } else {
+      assert(0);
+    }
+
+    if (match_token(p, TOK_ASSIGN)) {
+      dec->optional_exp = parse_expression(p);
+    } else {
+      dec->optional_exp = NULL;
+    }
+
+    if (!match_token(p, TOK_SEMICOL)) {
+      assert(0);
+    }
+  } else {
+    assert(0);
   }
 
-  push_back_stat(func->body, (*stat));
+  return dec;
+}
+
+int parse_block_item(Parser *p, BlockArray *arr) {
+  AST_BlockItem *block = malloc(sizeof(AST_BlockItem));
+
+  if (compare_kind(p, TOK_INTKEY)) {
+    block->kind = BLOCK_DECLARE;
+    block->dec = parse_declaration(p);
+  } else {
+    block->kind = BLOCK_STAT;
+    block->stat = parse_statement(p);
+  }
+
+  push_back_block(arr, *block);
 
   return 1;
 }
@@ -311,7 +410,7 @@ int parse_function(Parser *p, AST_Program *prog) {
   prog->func = func;
 
   func->name = "main";
-  func->body = initialize_stat_array(1);
+  func->body = initialize_block_array(1);
 
   if (!match_token(p, TOK_LPAREN)) {
     return 0;
@@ -326,7 +425,7 @@ int parse_function(Parser *p, AST_Program *prog) {
   }
 
   while (p->i < p->arr->size && !compare_kind(p, TOK_RCURLY)) {
-    int status = parse_statement(p, func);
+    int status = parse_block_item(p, func->body);
 
     if (!status) {
       return 0;

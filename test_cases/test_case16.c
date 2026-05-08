@@ -1,0 +1,10 @@
+int main() {
+  int a = 0;
+  int b = 1;
+
+  if (a + b) {
+    return 3;
+  } else {
+    return 2;
+  }
+}

@@ -18,6 +18,7 @@ void run_test_case(char *test_case_path, TokenArray *expected) {
 
   assert(lex(src, arr));
 
+  
   assert(expected->size == arr->size);
 
   for (unsigned int i = 0; i < arr->size; ++i) {
@@ -35,14 +36,22 @@ int main() {
   Token r_paren = {TOK_RPAREN, ")"};
   Token l_curly = {TOK_LCURLY, "{"};
   Token ret_keyword = {TOK_RETKEY, "return"};
+  Token if_key = {TOK_IFKEY, "if"};
+  Token else_key = {TOK_ELSEKEY, "else"};
   Token semicol = {TOK_SEMICOL, ";"};
+  Token colon = {TOK_COLON, ":"};
+  Token qmark = {TOK_QMARK, "?"};
   Token r_curly = {TOK_RCURLY, "}"};
   Token assign = {TOK_ASSIGN, "="};
   Token a = {TOK_ID, "a"};
   Token b = {TOK_ID, "b"};
+  Token zero = {TOK_INTLIT, "0"};
+  Token one = {TOK_INTLIT, "1"};
+  Token two = {TOK_INTLIT, "2"};
   Token three = {TOK_INTLIT, "3"};
   Token four = {TOK_INTLIT, "4"};
   Token plus = {TOK_ADD, "+"};
+  Token minus = {TOK_NEGATION, "-"};
 
   TokenArray *exp1 = initialize_token_array(1);
   
@@ -54,14 +63,33 @@ int main() {
   push_back_token(exp1, int_keyword);
   push_back_token(exp1, a);
   push_back_token(exp1, assign);
+  push_back_token(exp1, zero);
+  push_back_token(exp1, semicol);
+  push_back_token(exp1, int_keyword);
+  push_back_token(exp1, b);
+  push_back_token(exp1, assign);
+  push_back_token(exp1, one);
+  push_back_token(exp1, semicol);
+  push_back_token(exp1, if_key);
+  push_back_token(exp1, l_paren);
+  push_back_token(exp1, a);
+  push_back_token(exp1, plus);
+  push_back_token(exp1, b);
+  push_back_token(exp1, r_paren);
+  push_back_token(exp1, l_curly);
+  push_back_token(exp1, ret_keyword);
   push_back_token(exp1, three);
   push_back_token(exp1, semicol);
+  push_back_token(exp1, r_curly);
+  push_back_token(exp1, else_key);
+  push_back_token(exp1, l_curly);
   push_back_token(exp1, ret_keyword);
-  push_back_token(exp1, a);
+  push_back_token(exp1, two);
   push_back_token(exp1, semicol);
   push_back_token(exp1, r_curly);
+  push_back_token(exp1, r_curly);
   
-  run_test_case("test_cases/test_case13.c", exp1);
+  run_test_case("test_cases/test_case16.c", exp1);
 
   TokenArray *exp2 = initialize_token_array(1);
   
@@ -72,19 +100,46 @@ int main() {
   push_back_token(exp2, l_curly);
   push_back_token(exp2, int_keyword);
   push_back_token(exp2, a);
-  push_back_token(exp2, semicol);
-  push_back_token(exp2, a);
   push_back_token(exp2, assign);
-  push_back_token(exp2, four);
+  push_back_token(exp2, two);
   push_back_token(exp2, semicol);
-  push_back_token(exp2, ret_keyword);
-  push_back_token(exp2, a);
-  push_back_token(exp2, plus);
+  push_back_token(exp2, int_keyword);
+  push_back_token(exp2, b);
+  push_back_token(exp2, assign);
   push_back_token(exp2, three);
   push_back_token(exp2, semicol);
+  push_back_token(exp2, if_key);
+  push_back_token(exp2, l_paren);
+  push_back_token(exp2, a);
+  push_back_token(exp2, plus);
+  push_back_token(exp2, b);
+  push_back_token(exp2, r_paren);
+  push_back_token(exp2, l_curly);
+  push_back_token(exp2, ret_keyword);
+  push_back_token(exp2, one);
+  push_back_token(exp2, semicol);
   push_back_token(exp2, r_curly);
-  
-  run_test_case("test_cases/test_case14.c", exp2);
+  push_back_token(exp2, else_key);
+  push_back_token(exp2, if_key);
+  push_back_token(exp2, l_paren);
+  push_back_token(exp2, b);
+  push_back_token(exp2, minus);
+  push_back_token(exp2, a);
+  push_back_token(exp2, r_paren);
+  push_back_token(exp2, l_curly);
+  push_back_token(exp2, ret_keyword);
+  push_back_token(exp2, four);
+  push_back_token(exp2, semicol);
+  push_back_token(exp2, r_curly);
+  push_back_token(exp2, else_key);
+  push_back_token(exp2, l_curly);
+  push_back_token(exp2, ret_keyword);
+  push_back_token(exp2, zero);
+  push_back_token(exp2, semicol);
+  push_back_token(exp2, r_curly);
+  push_back_token(exp2, r_curly);
+
+  run_test_case("test_cases/test_case17.c", exp2);
 
   TokenArray *exp3 = initialize_token_array(1);
   
@@ -96,21 +151,22 @@ int main() {
   push_back_token(exp3, int_keyword);
   push_back_token(exp3, a);
   push_back_token(exp3, assign);
+  push_back_token(exp3, zero);
+  push_back_token(exp3, semicol);
+  push_back_token(exp3, a);
+  push_back_token(exp3, assign);
+  push_back_token(exp3, one);
+  push_back_token(exp3, qmark);
+  push_back_token(exp3, two);
+  push_back_token(exp3, colon);
   push_back_token(exp3, three);
   push_back_token(exp3, semicol);
-  push_back_token(exp3, int_keyword);
-  push_back_token(exp3, b);
-  push_back_token(exp3, assign);
-  push_back_token(exp3, a);
-  push_back_token(exp3, plus);
-  push_back_token(exp3, four);
-  push_back_token(exp3, semicol);
   push_back_token(exp3, ret_keyword);
-  push_back_token(exp3, b);
+  push_back_token(exp3, a);
   push_back_token(exp3, semicol);
   push_back_token(exp3, r_curly);
   
-  run_test_case("test_cases/test_case15.c", exp3);
+  run_test_case("test_cases/test_case18.c", exp3);
 
   printf("All test passed succesfully");
   return 0;

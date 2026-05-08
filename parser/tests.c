@@ -37,9 +37,9 @@ void run_test_case(char *test_case_path, char *result_file_path, char *expected_
 }
 
 int main() {
-  run_test_case("test_cases/test_case13.c", "parser/test1_result.txt", "parser/test1_expected.txt");
-  run_test_case("test_cases/test_case14.c", "parser/test2_result.txt", "parser/test2_expected.txt");
-  run_test_case("test_cases/test_case15.c", "parser/test3_result.txt", "parser/test3_expected.txt");
+  run_test_case("test_cases/test_case16.c", "parser/test1_result.txt", "parser/test1_expected.txt");
+  run_test_case("test_cases/test_case17.c", "parser/test2_result.txt", "parser/test2_expected.txt");
+  run_test_case("test_cases/test_case18.c", "parser/test3_result.txt", "parser/test3_expected.txt");
 
   printf("All test cases passed");
   return 0;
