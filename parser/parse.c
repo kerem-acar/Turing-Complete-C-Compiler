@@ -391,7 +391,7 @@ int parse_block_item(Parser *p, BlockArray *arr) {
     block->stat = parse_statement(p);
   }
 
-  push_back_block(arr, *block);
+  push_back_block(arr, block);
 
   return 1;
 }

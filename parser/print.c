@@ -8,10 +8,13 @@ void print_indent(int indent, FILE *fp) {
 void print_expression_node(AST_Expression *exp, int indent, FILE *fp) {
   print_indent(indent, fp);
 
-  if (exp->kind == EXP_CONSTANT) {
+  switch (exp->kind) {
+  case EXP_CONSTANT: {
     printf("Expression (Constant: %s)\n", exp->Constant);
     fprintf(fp, "Expression (Constant: %s)\n", exp->Constant);
-  } else if (exp->kind == EXP_UN_OP) {
+  } break;
+
+  case EXP_UN_OP: {
     switch(exp->UnOp.un_op.kind) {
     case TOK_BITCOMP: {
       printf("Expression (Unary Operator: %c)\n", '~');
@@ -27,7 +30,9 @@ void print_expression_node(AST_Expression *exp, int indent, FILE *fp) {
     } break;
     }
     print_expression_node(exp->UnOp.exp, indent + 2, fp);
-  } else if (exp->kind == EXP_BIN_OP) {
+  } break;
+
+  case EXP_BIN_OP: {
     switch(exp->BinOp.bin_op.kind) {
     case TOK_ADD: {
       printf("Expression (Binary Operator: %c)\n", '+');
@@ -81,15 +86,21 @@ void print_expression_node(AST_Expression *exp, int indent, FILE *fp) {
     
     print_expression_node(exp->BinOp.left_exp, indent + 2, fp);
     print_expression_node(exp->BinOp.right_exp, indent + 2, fp);
-  } else if (exp->kind == EXP_ASSIGN) {
+  } break;
+
+  case EXP_ASSIGN: {
     printf("Assign (Variable: %s)\n", exp->Assign.name);
     fprintf(fp, "Assign (Variable: %s)\n", exp->Assign.name);
 
     print_expression_node(exp->Assign.exp, indent + 2, fp);
-  } else if (exp->kind == EXP_REF) {
+  } break;
+
+  case EXP_REF: {
     printf("Reference (Variable: %s)\n", exp->Reference);
     fprintf(fp, "Reference (Variable: %s)\n", exp->Reference);
-  } else {
+  } break;
+
+  case EXP_COND: {
     printf("Conditional expression\n");
     fprintf(fp, "Conditional expression\n");
 
@@ -102,6 +113,7 @@ void print_expression_node(AST_Expression *exp, int indent, FILE *fp) {
     if (exp->CondExp.e3 != NULL) {
       print_expression_node(exp->CondExp.e3, indent + 2, fp);
     }
+  } break;
   }
 }
 
@@ -153,10 +165,10 @@ void print_function_node(AST_Function *func, int indent, FILE *fp) {
   fprintf(fp, "Function (Name: %s)\n", func->name);
 
   for (unsigned int i = 0; i < func->body->size; ++i) {
-    if (func->body->array[i].kind == BLOCK_STAT) {
-      print_statement_node(func->body->array[i].stat, indent + 2, fp);
+    if (func->body->array[i]->kind == BLOCK_STAT) {
+      print_statement_node(func->body->array[i]->stat, indent + 2, fp);
     } else {
-      print_declaration_node(func->body->array[i].dec, indent + 2, fp);
+      print_declaration_node(func->body->array[i]->dec, indent + 2, fp);
     }
   }
 }
