@@ -59,7 +59,7 @@ void generate_expression(AST_Expression *exp, CharArray *arr, Map *var_map, int 
     int offset = res.val;
     
     print_to_char_array(arr, "%s%s%d%c\n", indent, "mov eax, dword ptr [rbp - ", offset, ']');
-  } else {
+  } else if (exp->kind == EXP_BIN_OP) {
     generate_expression(exp->BinOp.left_exp, arr, var_map, clause_id, end_id);
 
     if (__BIN_JUNC_START__ > exp->BinOp.bin_op.kind || exp->BinOp.bin_op.kind > __BIN_JUNC_END__) {
@@ -140,6 +140,29 @@ void generate_expression(AST_Expression *exp, CharArray *arr, Map *var_map, int 
 
     } break;
     }
+  } else {
+    generate_expression(exp->CondExp.e1, arr, var_map, clause_id, end_id);
+
+    int curr_clause_id = *clause_id;
+    int curr_end_id = *end_id;
+
+    print_to_char_array(arr, "%s%s\n", indent, "cmp eax, 0");
+    print_to_char_array(arr, "%s%s%s%d\n", indent, "je ", "clause", curr_clause_id);
+    
+    (*clause_id)++;
+    (*end_id)++;
+
+    generate_expression(exp->CondExp.e2, arr, var_map, clause_id, end_id);
+
+    print_to_char_array(arr, "%s%s%s%d\n", indent, "jmp ", "end", curr_end_id);
+    print_to_char_array(arr, "%s%d:\n", "clause", curr_clause_id);
+
+    (*clause_id)++;
+    (*end_id)++;
+
+    generate_expression(exp->CondExp.e3, arr, var_map, clause_id, end_id);
+    print_to_char_array(arr, "%s%s%s%d\n", indent, "jmp ", "end", curr_end_id);
+    print_to_char_array(arr, "%s%d:\n", "end", curr_end_id);
   }
 }
 
@@ -148,23 +171,53 @@ void generate_statement(AST_Statement *stmt, CharArray *arr, Map *var_map, int *
   
   if (stmt->kind == STAT_RETURN) {
     generate_expression(stmt->Return, arr, var_map, clause_id, end_id);
-  } else if (stmt->kind == STAT_DECLARE) {
-    if (map_find_idx(var_map, stmt->Declare.name) != -1) {
-      assert(0);
-    }
-
-    if (stmt->Declare.exp != NULL) {
-      generate_expression(stmt->Declare.exp, arr, var_map, clause_id, end_id);
-    } else {
-      print_to_char_array(arr, "%s%s\n", indent, "mov eax, 0");
-    }
-
-    print_to_char_array(arr, "%s%s\n", indent, "push rax");
-    map_insert(var_map, stmt->Declare.name, *stack_index);
-    *stack_index += 8;
-  } else {
+  } else if (stmt->kind == STAT_EXP) {
     generate_expression(stmt->Expression, arr, var_map, clause_id, end_id);
+  } else {
+    generate_expression(stmt->If.exp, arr, var_map, clause_id, end_id);
+
+    int curr_clause_id = *clause_id;
+    int curr_end_id = *end_id;
+
+    print_to_char_array(arr, "%s%s\n", indent, "cmp eax, 0");
+    print_to_char_array(arr, "%s%s%s%d\n", indent, "je ", "clause", curr_clause_id);
+    
+    (*clause_id)++;
+    (*end_id)++;
+
+    generate_statement(stmt->If.stat, arr, var_map, stack_index, clause_id, end_id);
+
+    print_to_char_array(arr, "%s%s%s%d\n", indent, "jmp ", "end", curr_end_id);
+    print_to_char_array(arr, "%s%d:\n", "clause", curr_clause_id);
+
+    if (stmt->If.optional_stat != NULL) {
+      (*clause_id)++;
+      (*end_id)++;
+
+      generate_statement(stmt->If.optional_stat, arr, var_map, stack_index, clause_id, end_id);
+    }
+    
+    print_to_char_array(arr, "%s%s%s%d\n", indent, "jmp ", "end", curr_end_id);
+    print_to_char_array(arr, "%s%d:\n", "end", curr_end_id);
   }
+}
+
+void generate_declaration(AST_Declaration *dec, CharArray *arr, Map *var_map, int *stack_index, int *clause_id, int *end_id) {
+  static char *indent = "    ";
+
+  if (map_find_idx(var_map, dec->name) != -1) {
+    assert(0);
+  }
+
+  if (dec->optional_exp != NULL) {
+    generate_expression(dec->optional_exp, arr, var_map, clause_id, end_id);
+  } else {
+    print_to_char_array(arr, "%s%s\n", indent, "mov eax, 0");
+  }
+
+  print_to_char_array(arr, "%s%s\n", indent, "push rax");
+  map_insert(var_map, dec->name, *stack_index);
+  *stack_index += 8;  
 }
 
 int generate_function(AST_Program *prog, char *file_path, CharArray *arr, int id) {
@@ -188,7 +241,11 @@ int generate_function(AST_Program *prog, char *file_path, CharArray *arr, int id
   int end_id = 1;
 
   for (unsigned int i = 0; i < func->body->size; ++i) {
-    generate_statement(&func->body->array[i], arr, &var_map, &stack_index, &clause_id, &end_id);
+    if (func->body->array[i]->kind == BLOCK_STAT) {
+      generate_statement(func->body->array[i]->stat, arr, &var_map, &stack_index, &clause_id, &end_id);
+    } else {
+      generate_declaration(func->body->array[i]->dec, arr, &var_map, &stack_index, &clause_id, &end_id);
+    }
   }
 
   print_to_char_array(arr, "%s%s\n", indent, "mov rsp, rbp");
