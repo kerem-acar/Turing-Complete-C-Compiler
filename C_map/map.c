@@ -1,13 +1,20 @@
+typedef enum Status {
+  EMPTY,
+  DELETED,
+  OCCUPIED
+} Status;
+
 typedef struct MapEntry {
   char *key;
-  int val; // 0 signals empty, 1 signals deleted
+  int val;
+  Status state;
 } MapEntry;
 
-typedef struct Map {
+typedef struct StackIndexMap {
   MapEntry *data;
   int capacity;
   int size;
-} Map;
+} StackIndexMap;
 
 int streq(char *s, char *q) { 
   if (s == NULL || q == NULL) {
@@ -16,7 +23,7 @@ int streq(char *s, char *q) {
   return !strcmp(s, q); 
 }
 
-void map_init(Map *m, int cap) {
+void map_init(StackIndexMap *m, int cap) {
   m->data = (MapEntry *)calloc(cap, sizeof(MapEntry));
   assert(m->data);
   m->capacity = cap;
@@ -29,17 +36,17 @@ typedef struct FindRes {
   int index;
 } FindRes;
 
-int get_index(Map *m, char *key) {
+int get_index(StackIndexMap *m, char *key) {
   return hash(key) % m->capacity;
 }
 
-FindRes map_lookup(Map *m, char *key) {
+FindRes map_lookup(StackIndexMap *m, char *key) {
   FindRes res;
   res.found = 0;
 
   int idx = get_index(m, key);
 
-  if (m->data[idx].val == 0) {
+  if (m->data[idx].state == EMPTY) {
     return res;
   }
 
@@ -50,7 +57,7 @@ FindRes map_lookup(Map *m, char *key) {
   } else {
     idx = (idx + 1) % m->capacity;
 
-    while (m->data[idx].val != 0) {
+    while (m->data[idx].state != EMPTY) {
       if (streq(key, m->data[idx].key)) {
         res.found = 1;
         res.val = m->data[idx].val;
@@ -65,13 +72,13 @@ FindRes map_lookup(Map *m, char *key) {
   return res;
 }
 
-void map_insert(Map *m, char *key, int val) {
+void map_insert(StackIndexMap *m, char *key, int val) {
   if (m->size * 4 >= m->capacity * 3) { // trigger resize when map is 75% full    
-    Map tmp;
+    StackIndexMap tmp;
     map_init(&tmp, m->capacity * 2);
     
     for (unsigned int i = 0; i < m->capacity; i += 1) {
-      if (m->data[i].val != 0 && m->data[i].val != 1) {
+      if (m->data[i].state == OCCUPIED) {
         map_insert(&tmp, m->data[i].key, m->data[i].val);
       }
     }
@@ -95,12 +102,13 @@ void map_insert(Map *m, char *key, int val) {
   MapEntry to_insert;
   to_insert.key = key;
   to_insert.val = val;
+  to_insert.state = OCCUPIED;
 
-  if (m->data[idx].val == 0 || m->data[idx].val == 1) {
+  if (m->data[idx].state != OCCUPIED) {
     m->data[idx] = to_insert;
     m->size += 1;
   } else {
-    while (m->data[idx].val != 0 && m->data[idx].val != 1) {
+    while (m->data[idx].state == OCCUPIED) {
       idx = (idx + 1) % m->capacity;
     }
 
@@ -109,13 +117,14 @@ void map_insert(Map *m, char *key, int val) {
   }
 }
 
-void delete_key(Map *m, char *key) {
+void delete_key(StackIndexMap *m, char *key) {
   FindRes res = map_lookup(m, key);
 
   if (res.found) {
-    m->data[res.index].val = 1;
+    m->data[res.index].state = DELETED;
     free(m->data[res.index].key);
     m->data[res.index].key = NULL;
+    m->data[res.index].val = 0;
     m->size -= 1;
   }
 }
