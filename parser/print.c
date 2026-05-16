@@ -117,6 +117,8 @@ void print_expression_node(AST_Expression *exp, int indent, FILE *fp) {
   }
 }
 
+void print_block_item(AST_BlockItem *block, int indent, FILE *fp);
+
 void print_statement_node(AST_Statement *stat, int indent, FILE *fp) {
   print_indent(indent, fp);
   
@@ -139,11 +141,18 @@ void print_statement_node(AST_Statement *stat, int indent, FILE *fp) {
       fprintf(fp, "Else statement\n");
       print_statement_node(stat->If.optional_stat, indent + 2, fp);
     }
-  } else {
+  } else if (stat->kind == STAT_EXP) {
     printf("Expression statement\n");
     fprintf(fp, "Expression statement\n");
 
     print_expression_node(stat->Expression, indent + 2, fp);
+  } else {
+    printf("Compound statement\n");
+    fprintf(fp, "Compound statement\n");
+
+    for (unsigned int i = 0; i < stat->Compound->size; ++i) {
+      print_block_item(stat->Compound->array[i], indent, fp);
+    }
   }
 }
 
@@ -158,6 +167,14 @@ void print_declaration_node(AST_Declaration *dec, int indent, FILE *fp) {
   } 
 }
 
+void print_block_item(AST_BlockItem *block, int indent, FILE *fp) {
+  if (block->kind == BLOCK_STAT) {
+    print_statement_node(block->stat, indent + 2, fp);
+  } else {
+    print_declaration_node(block->dec, indent + 2, fp);
+  }
+}
+
 void print_function_node(AST_Function *func, int indent, FILE *fp) {
   print_indent(indent, fp);
 
@@ -165,11 +182,7 @@ void print_function_node(AST_Function *func, int indent, FILE *fp) {
   fprintf(fp, "Function (Name: %s)\n", func->name);
 
   for (unsigned int i = 0; i < func->body->size; ++i) {
-    if (func->body->array[i]->kind == BLOCK_STAT) {
-      print_statement_node(func->body->array[i]->stat, indent + 2, fp);
-    } else {
-      print_declaration_node(func->body->array[i]->dec, indent + 2, fp);
-    }
+    print_block_item(func->body->array[i], indent, fp);
   }
 }
 

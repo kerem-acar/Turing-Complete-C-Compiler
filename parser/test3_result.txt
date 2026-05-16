@@ -1,12 +1,12 @@
 Program
   Function (Name: main)
     Variable declaration (Name: a)
-      Expression (Constant: 0)
-    Expression statement
-      Assign (Variable: a)
-        Conditional expression
-          Expression (Constant: 1)
-          Expression (Constant: 2)
+      Expression (Constant: 2)
+    Compound statement
+      Expression statement
+        Assign (Variable: a)
           Expression (Constant: 3)
+      Variable declaration (Name: a)
+        Expression (Constant: 0)
     Return statement
       Reference (Variable: a)

@@ -1,22 +1,20 @@
 Program
   Function (Name: main)
     Variable declaration (Name: a)
-      Expression (Constant: 2)
-    Variable declaration (Name: b)
-      Expression (Constant: 3)
-    If statement
-      Expression (Binary Operator: +)
-        Reference (Variable: a)
-        Reference (Variable: b)
-      Return statement
+      Expression (Constant: 0)
+    Compound statement
+      Variable declaration (Name: b)
         Expression (Constant: 1)
-    Else statement
-      If statement
-        Expression (Binary Operator: -)
+      Expression statement
+        Assign (Variable: a)
           Reference (Variable: b)
-          Reference (Variable: a)
-        Return statement
-          Expression (Constant: 4)
-      Else statement
-        Return statement
-          Expression (Constant: 0)
+    Compound statement
+      Variable declaration (Name: b)
+        Expression (Constant: 2)
+      Expression statement
+        Assign (Variable: a)
+          Expression (Binary Operator: +)
+            Reference (Variable: a)
+            Reference (Variable: b)
+    Return statement
+      Reference (Variable: a)

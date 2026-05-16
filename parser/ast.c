@@ -1,3 +1,12 @@
+typedef struct AST_Expression AST_Expression;
+typedef struct AST_Statement AST_Statement;
+typedef struct AST_Declaration AST_Declaration;
+typedef struct AST_BlockItem AST_BlockItem;
+typedef struct AST_Function AST_Function;
+typedef struct AST_Program AST_Program;
+
+#include "../C_array/block_array.c"
+
 typedef enum ExpKind {
   EXP_BIN_OP,
   EXP_UN_OP,
@@ -10,7 +19,8 @@ typedef enum ExpKind {
 typedef enum StatKind {
   STAT_RETURN,
   STAT_EXP,
-  STAT_IF
+  STAT_IF,
+  STAT_COMP
 } StatKind;
 
 typedef enum BlockKind {
@@ -18,39 +28,40 @@ typedef enum BlockKind {
   BLOCK_STAT
 } BlockKind;
 
-typedef struct AST_Expression {
+
+struct AST_Expression {
   ExpKind kind; 
 
   union {
     struct {
       char *name;
-      struct AST_Expression *exp;
+      AST_Expression *exp; 
     } Assign;
 
     char *Reference;
 
     struct {
       Token bin_op;
-      struct AST_Expression *left_exp;
-      struct AST_Expression *right_exp;      
+      AST_Expression *left_exp;
+      AST_Expression *right_exp;      
     } BinOp;
 
     struct {
       Token un_op;
-      struct AST_Expression *exp;
+      AST_Expression *exp;
     } UnOp;
 
     struct {
-      struct AST_Expression *e1;
-      struct AST_Expression *e2;
-      struct AST_Expression *e3;
+      AST_Expression *e1;
+      AST_Expression *e2;
+      AST_Expression *e3;
     } CondExp;
 
     char *Constant;
   };
-} AST_Expression;
+};
 
-typedef struct AST_Statement {
+struct AST_Statement {
   StatKind kind;
   
   union {
@@ -58,35 +69,35 @@ typedef struct AST_Statement {
 
     struct {
       AST_Expression *exp;
-      struct AST_Statement *stat;
-      struct AST_Statement *optional_stat;
+      AST_Statement *stat;
+      AST_Statement *optional_stat;
     } If;
 
     AST_Expression *Expression;
-  };  
-} AST_Statement;
 
-typedef struct AST_Declaration {
+    BlockArray *Compound; 
+  };  
+};
+
+struct AST_Declaration {
   char *name;
   AST_Expression *optional_exp;
-} AST_Declaration;
+};
 
-typedef struct AST_BlockItem {
+struct AST_BlockItem {
   BlockKind kind;
 
   union {
     AST_Statement *stat;
     AST_Declaration *dec;
   };
-} AST_BlockItem;
+};
 
-#include "../C_array/block_array.c"
-
-typedef struct AST_Function {
+struct AST_Function {
   BlockArray *body;
   char *name;
-} AST_Function;
+};
 
-typedef struct AST_Program {
+struct AST_Program {
   AST_Function *func;
-} AST_Program;
+};

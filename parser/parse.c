@@ -293,6 +293,8 @@ AST_Expression *parse_expression(Parser *p) {
   return exp;
 }
 
+int parse_block_item(Parser *p, BlockArray *arr);
+
 AST_Statement *parse_statement(Parser *p) {
   AST_Statement *stat = malloc(sizeof(AST_Statement));
 
@@ -316,30 +318,39 @@ AST_Statement *parse_statement(Parser *p) {
       assert(0);
     }
 
-    if (!match_token(p, TOK_LCURLY)) {
+    if (!compare_kind(p, TOK_LCURLY)) {
       assert(0);
     }
 
-    stat->If.stat = parse_statement(p);
-
-    if (!match_token(p, TOK_RCURLY)) {
-      assert(0);
-    }
+    stat->If.stat = parse_statement(p); 
 
     if (match_token(p, TOK_ELSEKEY)) {
       if (compare_kind(p, TOK_IFKEY)) {
         stat->If.optional_stat = parse_statement(p);
       } else {
-        if (!match_token(p, TOK_LCURLY)) {
+        if (!compare_kind(p, TOK_LCURLY)) {
           assert(0);
         }
 
         stat->If.optional_stat = parse_statement(p);
-      
-        if (!match_token(p, TOK_RCURLY));
       }
     } else {
       stat->If.optional_stat = NULL;
+    }
+  } else if (match_token(p, TOK_LCURLY)) {
+    stat->kind = STAT_COMP;
+    stat->Compound = initialize_block_array(1);
+    
+    while (p->i < p->arr->size && !compare_kind(p, TOK_RCURLY)) {
+      int status = parse_block_item(p, stat->Compound);
+
+      if (!status) {
+        return 0;
+      }
+    }
+
+    if (!match_token(p, TOK_RCURLY)) {
+      assert(0);
     }
   } else {
     stat->kind = STAT_EXP;
