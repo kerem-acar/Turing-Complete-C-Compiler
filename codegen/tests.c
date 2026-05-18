@@ -2,11 +2,14 @@
 #include <ctype.h>
 #include <stdbool.h>
 #include <stdio.h>
+#include <stdint.h>
 #include <stdlib.h>
 #include <string.h>
 #include <stdarg.h>
 
+#include "../C_map/hash.c"
 #include "../C_map/map.c"
+#include "../C_set/set.c"
 #include "../lexer/token.c"
 #include "../C_array/token_array.c"
 #include "../C_array/char_array.c"
@@ -39,13 +42,13 @@ void run_test_case(char *test_case_path, char *test_result_path, int id) {
 int main() {
   int id = 1;
 
-  run_test_case("test_cases/test_case16.c", "codegen/test1_result.s", id);
+  run_test_case("test_cases/test_case19.c", "codegen/test1_result.s", id);
   id += 1;
 
-  run_test_case("test_cases/test_case17.c", "codegen/test2_result.s", id);
+  run_test_case("test_cases/test_case20.c", "codegen/test2_result.s", id);
   id += 1;
   
-  run_test_case("test_cases/test_case18.c", "codegen/test3_result.s", id);
+  run_test_case("test_cases/test_case21.c", "codegen/test3_result.s", id);
   id += 1;
   
   printf("All tests passed");

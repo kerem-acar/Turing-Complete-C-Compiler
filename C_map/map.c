@@ -128,3 +128,20 @@ void delete_key(StackIndexMap *m, char *key) {
     m->size -= 1;
   }
 }
+
+void map_copy(StackIndexMap *dest, StackIndexMap *src) {
+  dest->capacity = src->capacity;
+  dest->size = src->size;
+
+  dest->data = (MapEntry *)calloc(dest->capacity, sizeof(MapEntry));
+  assert(dest->data);
+
+  for (int i = 0; i < src->capacity; i++) {
+    dest->data[i].state = src->data[i].state;
+    
+    if (src->data[i].state == OCCUPIED) {
+      dest->data[i].val = src->data[i].val;
+      dest->data[i].key = strdup(src->data[i].key); 
+    }
+  }
+}
