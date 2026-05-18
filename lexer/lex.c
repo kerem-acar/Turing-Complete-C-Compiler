@@ -49,6 +49,21 @@ int lex(const char *src, TokenArray *result) {
       } else if (!strcmp(word->array, "else")) {
         tok.kind = TOK_ELSEKEY;
         delete_char_array(&word);
+      } else if (!strcmp(word->array, "for")) {
+        tok.kind = TOK_FORKEY;
+        delete_char_array(&word);
+      } else if (!strcmp(word->array, "while")) {
+        tok.kind = TOK_WHILEKEY;
+        delete_char_array(&word);
+      } else if (!strcmp(word->array, "do")) {
+        tok.kind = TOK_DOKEY;
+        delete_char_array(&word);
+      } else if (!strcmp(word->array, "break")) {
+        tok.kind = TOK_BREAKKEY;
+        delete_char_array(&word);
+      } else if (!strcmp(word->array, "continue")) {
+        tok.kind = TOK_CONTKEY;
+        delete_char_array(&word);
       } else {
         tok.kind = TOK_ID;
         tok.literal = word->array;

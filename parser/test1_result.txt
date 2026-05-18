@@ -24,5 +24,3 @@ Program
           Compound statement
             Return statement
               Expression (Constant: 5)
-    Return statement
-      Reference (Variable: a)
