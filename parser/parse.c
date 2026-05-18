@@ -292,7 +292,7 @@ AST_Expression *parse_expression(Parser *p) {
 
   return exp;
 }
-
+AST_Declaration *parse_declaration(Parser *p);
 int parse_block_item(Parser *p, BlockArray *arr);
 
 AST_Statement *parse_statement(Parser *p) {
@@ -352,12 +352,131 @@ AST_Statement *parse_statement(Parser *p) {
     if (!match_token(p, TOK_RCURLY)) {
       assert(0);
     }
-  } else {
-    stat->kind = STAT_EXP;
-    stat->Expression = parse_expression(p);
-    
+  } else if (match_token(p, TOK_FORKEY)) {
+    if (!match_token(p, TOK_LPAREN)) {
+      assert(0);
+    }
+
+    if (compare_kind(p, TOK_INTKEY)) {
+      stat->kind = STAT_FORDEC;
+
+      stat->ForDecl.dec = parse_declaration(p);
+
+      if (match_token(p, TOK_SEMICOL)) {
+        stat->ForDecl.e1 = NULL;
+      } else {
+        stat->ForDecl.e1 = parse_expression(p);
+
+        if (!match_token(p, TOK_SEMICOL)) {
+          assert(0);
+        }
+      }
+
+      if (match_token(p, TOK_RPAREN)) {
+        stat->ForDecl.e2 = NULL;
+      } else {
+        stat->ForDecl.e2 = parse_expression(p);
+
+        if (!match_token(p, TOK_RPAREN)) {
+          assert(0);
+        }
+      }
+
+      stat->ForDecl.stat = parse_statement(p);
+    } else {
+      stat->kind = STAT_FOR;
+
+      if (match_token(p, TOK_SEMICOL)) {
+        stat->For.e1 = NULL;
+      } else {
+        stat->For.e1 = parse_expression(p);
+
+        if (!match_token(p, TOK_SEMICOL)) {
+          assert(0);
+        }
+      }
+
+      if (match_token(p, TOK_SEMICOL)) {
+        stat->For.e2 = NULL;
+      } else {
+        stat->For.e2 = parse_expression(p);
+
+        if (!match_token(p, TOK_SEMICOL)) {
+          assert(0);
+        }
+      }
+
+      if (match_token(p, TOK_RPAREN)) {
+        stat->For.e3 = NULL;
+      } else {
+        stat->For.e3 = parse_expression(p);
+
+        if (!match_token(p, TOK_RPAREN)) {
+          assert(0);
+        }
+      }
+
+      stat->For.stat = parse_statement(p);
+    }
+  } else if (match_token(p, TOK_BREAKKEY)) {
+    stat->kind = STAT_BREAK;
+
     if (!match_token(p, TOK_SEMICOL)) {
       assert(0);
+    }
+  } else if (match_token(p, TOK_CONTKEY)) {
+    stat->kind = STAT_CONT;
+
+    if (!match_token(p, TOK_SEMICOL)) {
+      assert(0);
+    }
+  } else if (match_token(p, TOK_WHILEKEY)) {
+    stat->kind = STAT_WHILE;
+    
+    if (!match_token(p, TOK_LPAREN)) {
+      assert(0);
+    }
+
+    stat->While.exp = parse_expression(p);
+
+    if (!match_token(p, TOK_RPAREN)) {
+      assert(0);
+    }
+
+    stat->While.stat = parse_statement(p);
+  } else if (match_token(p, TOK_DOKEY)) {
+    stat->kind = STAT_DO;
+
+    stat->Do.stat = parse_statement(p);
+
+    if (!match_token(p, TOK_WHILEKEY)) {
+      assert(0);
+    }
+
+    if (!match_token(p, TOK_LPAREN)) {
+      assert(0);
+    }
+
+    stat->Do.exp = parse_expression(p);
+
+    if (!match_token(p, TOK_RPAREN)) {
+      assert(0);
+    }
+
+    if (!match_token(p, TOK_SEMICOL)) {
+      assert(0);
+    }
+  } else {
+    stat->kind = STAT_EXP;
+
+    if (match_token(p, TOK_SEMICOL)) {
+      stat->Expression = NULL;
+    } else {
+      stat->Expression = parse_expression(p);
+      
+      if (!match_token(p, TOK_SEMICOL)) {
+        assert(0);
+      }
     }
   }
 

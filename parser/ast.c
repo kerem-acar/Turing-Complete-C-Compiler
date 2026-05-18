@@ -20,7 +20,13 @@ typedef enum StatKind {
   STAT_RETURN,
   STAT_EXP,
   STAT_IF,
-  STAT_COMP
+  STAT_COMP,
+  STAT_FOR,
+  STAT_FORDEC,
+  STAT_WHILE,
+  STAT_DO,
+  STAT_BREAK,
+  STAT_CONT
 } StatKind;
 
 typedef enum BlockKind {
@@ -73,9 +79,33 @@ struct AST_Statement {
       AST_Statement *optional_stat;
     } If;
 
-    AST_Expression *Expression;
+    AST_Expression *Expression; 
 
     BlockArray *Compound; 
+
+    struct {
+      AST_Expression *e1; 
+      AST_Expression *e2;
+      AST_Expression *e3;
+      AST_Statement *stat;
+    } For;
+
+    struct {
+      AST_Declaration *dec;
+      AST_Expression *e1;
+      AST_Expression *e2;
+      AST_Statement *stat;
+    } ForDecl;
+
+    struct {
+      AST_Expression *exp;
+      AST_Statement *stat;
+    } While;
+
+    struct {
+      AST_Statement *stat;
+      AST_Expression *exp;
+    } Do;
   };  
 };
 

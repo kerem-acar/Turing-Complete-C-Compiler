@@ -117,6 +117,7 @@ void print_expression_node(AST_Expression *exp, int indent, FILE *fp) {
   }
 }
 
+void print_declaration_node(AST_Declaration *dec, int indent, FILE *fp);
 void print_block_item(AST_BlockItem *block, int indent, FILE *fp);
 
 void print_statement_node(AST_Statement *stat, int indent, FILE *fp) {
@@ -145,7 +146,59 @@ void print_statement_node(AST_Statement *stat, int indent, FILE *fp) {
     printf("Expression statement\n");
     fprintf(fp, "Expression statement\n");
 
-    print_expression_node(stat->Expression, indent + 2, fp);
+    if (stat->Expression != NULL) {
+      print_expression_node(stat->Expression, indent + 2, fp);
+    }
+  } else if (stat->kind == STAT_BREAK) {
+    printf("Break statement\n");
+    fprintf(fp, "Break statement\n");
+  } else if (stat->kind == STAT_CONT) {
+    printf("Continue statement\n");
+    fprintf(fp, "Continue statement\n");
+  } else if (stat->kind == STAT_FOR) {
+    printf("For statement\n");
+    fprintf(fp, "For statement\n");
+
+    if (stat->For.e1 != NULL) {
+      print_expression_node(stat->For.e1, indent + 2, fp);
+    }
+
+    if (stat->For.e2 != NULL) {
+      print_expression_node(stat->For.e2, indent + 2, fp);
+    }
+
+    if (stat->For.e3 != NULL) {
+      print_expression_node(stat->For.e3, indent + 2, fp);
+    }
+
+    print_statement_node(stat->For.stat, indent + 2, fp);
+  } else if (stat->kind == STAT_FORDEC) {
+    printf("For statement\n");
+    fprintf(fp, "For statement\n");
+
+    print_declaration_node(stat->ForDecl.dec, indent + 2, fp);
+
+    if (stat->ForDecl.e1 != NULL) {
+      print_expression_node(stat->ForDecl.e1, indent + 2, fp);
+    }
+
+    if (stat->ForDecl.e2 != NULL) {
+      print_expression_node(stat->ForDecl.e2, indent + 2, fp);
+    }
+
+    print_statement_node(stat->ForDecl.stat, indent + 2, fp);
+  } else if (stat->kind == STAT_DO) {
+    printf("Do statement\n");
+    fprintf(fp, "Do statement\n");
+
+    print_statement_node(stat->Do.stat, indent + 2, fp);
+    print_expression_node(stat->Do.exp, indent + 2, fp);
+  } else if (stat->kind == STAT_WHILE) {
+    printf("While statement\n");
+    fprintf(fp, "While statement\n");
+
+    print_expression_node(stat->While.exp, indent + 2, fp);
+    print_statement_node(stat->While.stat, indent + 2, fp);
   } else {
     printf("Compound statement\n");
     fprintf(fp, "Compound statement\n");
