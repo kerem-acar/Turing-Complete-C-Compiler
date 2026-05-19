@@ -42,13 +42,13 @@ void run_test_case(char *test_case_path, char *test_result_path, int id) {
 int main() {
   int id = 1;
 
-  run_test_case("test_cases/test_case19.c", "codegen/test1_result.s", id);
+  run_test_case("test_cases/test_case22.c", "codegen/test1_result.s", id);
   id += 1;
 
-  run_test_case("test_cases/test_case20.c", "codegen/test2_result.s", id);
+  run_test_case("test_cases/test_case23.c", "codegen/test2_result.s", id);
   id += 1;
   
-  run_test_case("test_cases/test_case21.c", "codegen/test3_result.s", id);
+  run_test_case("test_cases/test_case24.c", "codegen/test3_result.s", id);
   id += 1;
   
   printf("All tests passed");

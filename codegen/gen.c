@@ -21,6 +21,9 @@ void print_to_char_array(CharArray *arr, const char *fmt, ...) {
 void generate_expression(AST_Expression *exp, CharArray *arr, StackIndexMap *m, int *clause_id, int *end_id) {
   static char *indent = "    ";
 
+  if (exp == NULL) {
+    return;
+  }
   if (exp->kind == EXP_CONSTANT) {
     print_to_char_array(arr, "%s%s%s\n", indent, "mov eax, ", exp->Constant);
   } else if (exp->kind == EXP_UN_OP) {
@@ -167,11 +170,16 @@ void generate_expression(AST_Expression *exp, CharArray *arr, StackIndexMap *m, 
 }
 
 void generate_declaration(AST_Declaration *dec, CharArray *arr, StackIndexMap *m, StringSet *s, int *stack_index, int *clause_id, int *end_id);
-void generate_block(BlockArray *b, CharArray *arr, StackIndexMap *m, int *stack_index, int *clause_id, int *end_id);
+void generate_block(BlockArray *b, CharArray *arr, StackIndexMap *m, int *stack_index, int *clause_id, int *end_id, int c_end_id, int c_clause_id);
 
-void generate_statement(AST_Statement *stmt, CharArray *arr, StackIndexMap *m, int *stack_index, int *clause_id, int *end_id) {
+void generate_statement(AST_Statement *stmt, CharArray *arr, StackIndexMap *m, int *stack_index, int *clause_id, int *end_id, int c_end_id, int c_clause_id) {
   static char *indent = "    ";
   
+
+  
+  int curr_clause_id = *clause_id;
+  int curr_end_id = *end_id;
+
   if (stmt->kind == STAT_RETURN) {
     generate_expression(stmt->Return, arr, m, clause_id, end_id);
   } else if (stmt->kind == STAT_EXP) {
@@ -179,16 +187,13 @@ void generate_statement(AST_Statement *stmt, CharArray *arr, StackIndexMap *m, i
   } else if (stmt->kind == STAT_IF) {
     generate_expression(stmt->If.exp, arr, m, clause_id, end_id);
 
-    int curr_clause_id = *clause_id;
-    int curr_end_id = *end_id;
-
     print_to_char_array(arr, "%s%s\n", indent, "cmp eax, 0");
     print_to_char_array(arr, "%s%s%s%d\n", indent, "je ", "clause", curr_clause_id);
     
     (*clause_id)++;
     (*end_id)++;
 
-    generate_statement(stmt->If.stat, arr, m, stack_index, clause_id, end_id);
+    generate_statement(stmt->If.stat, arr, m, stack_index, clause_id, end_id, c_end_id, c_clause_id);
 
     print_to_char_array(arr, "%s%s%s%d\n", indent, "jmp ", "end", curr_end_id);
     print_to_char_array(arr, "%s%d:\n", "clause", curr_clause_id);
@@ -197,16 +202,128 @@ void generate_statement(AST_Statement *stmt, CharArray *arr, StackIndexMap *m, i
       (*clause_id)++;
       (*end_id)++;
 
-      generate_statement(stmt->If.optional_stat, arr, m, stack_index, clause_id, end_id);
+      generate_statement(stmt->If.optional_stat, arr, m, stack_index, clause_id, end_id, c_end_id, c_clause_id);
     }
     
     print_to_char_array(arr, "%s%s%s%d\n", indent, "jmp ", "end", curr_end_id);
     print_to_char_array(arr, "%s%d:\n", "end", curr_end_id);
+  } else if (stmt->kind == STAT_WHILE) {
+    print_to_char_array(arr, "%s%d:\n", "clause", curr_clause_id);
+
+    (*clause_id)++;
+    (*end_id)++;
+
+    generate_expression(stmt->While.exp, arr, m, clause_id, end_id);
+
+    print_to_char_array(arr, "%s%s\n", indent, "cmp eax, 0");
+    print_to_char_array(arr, "%s%s%s%d\n", indent, "je ", "end", curr_end_id);
+
+    (*clause_id)++;
+    (*end_id)++;
+
+    generate_statement(stmt->While.stat, arr, m, stack_index, clause_id, end_id, curr_end_id, curr_clause_id);
+
+    print_to_char_array(arr, "%s%d:\n", "special", curr_clause_id);
+    print_to_char_array(arr, "%s%s%s%d\n", indent, "jmp ", "clause", curr_clause_id);
+
+    print_to_char_array(arr, "%s%d:\n", "end", curr_end_id);
+  } else if (stmt->kind == STAT_DO) {
+    print_to_char_array(arr, "%s%d:\n", "clause", curr_clause_id);
+
+    (*clause_id)++;
+    (*end_id)++;
+
+    generate_statement(stmt->Do.stat, arr, m, stack_index, clause_id, end_id, curr_end_id, curr_clause_id);
+
+    (*clause_id)++;
+    (*end_id)++;
+
+    generate_expression(stmt->Do.exp, arr, m, clause_id, end_id);
+
+    print_to_char_array(arr, "%s%s\n", indent, "cmp eax, 0");
+    print_to_char_array(arr, "%s%s%s%d\n", indent, "je ", "end", curr_end_id);
+
+    print_to_char_array(arr, "%s%d:\n", "special", curr_clause_id);
+    print_to_char_array(arr, "%s%s%s%d\n", indent, "jmp ", "clause", curr_clause_id);
+
+    print_to_char_array(arr, "%s%d:\n", "end", curr_end_id);
+  } else if (stmt->kind == STAT_FORDEC) {
+    (*clause_id)++;
+    (*end_id)++;
+
+    StackIndexMap m1;
+    map_copy(&m1, m);
+
+    
+    StringSet curr_scope;
+    set_init(&curr_scope, 10);
+
+    generate_declaration(stmt->ForDecl.dec, arr, &m1, &curr_scope, stack_index, clause_id, end_id);
+
+    print_to_char_array(arr, "%s%d:\n", "clause", curr_clause_id);
+
+    (*clause_id)++;
+    (*end_id)++;
+
+    generate_expression(stmt->ForDecl.e1, arr, &m1, clause_id, end_id);
+
+    print_to_char_array(arr, "%s%s\n", indent, "cmp eax, 0");
+    print_to_char_array(arr, "%s%s%s%d\n", indent, "je ", "end", curr_end_id);
+
+    (*clause_id)++;
+    (*end_id)++;
+
+    generate_statement(stmt->ForDecl.stat, arr, &m1, stack_index, clause_id, end_id, curr_end_id, curr_clause_id);
+
+    (*clause_id)++;
+    (*end_id)++;
+
+    print_to_char_array(arr, "%s%d:\n", "special", curr_clause_id);
+    generate_expression(stmt->ForDecl.e2, arr, &m1, clause_id, end_id);
+
+    print_to_char_array(arr, "%s%s%s%d\n", indent, "jmp ", "clause", curr_clause_id);
+    print_to_char_array(arr, "%s%d:\n", "end", curr_end_id);
+
+    *stack_index -= 8;
+    print_to_char_array(arr, "%s%s\n", indent, "add rsp, 8");
+  } else if (stmt->kind == STAT_FOR) {
+    (*clause_id)++;
+    (*end_id)++;
+
+    generate_expression(stmt->For.e1, arr, m, clause_id, end_id);
+
+    print_to_char_array(arr, "%s%d:\n", "clause", curr_clause_id);
+    
+    (*clause_id)++;
+    (*end_id)++;
+
+    generate_expression(stmt->For.e2, arr, m, clause_id, end_id);
+
+    print_to_char_array(arr, "%s%s\n", indent, "cmp eax, 0");
+    print_to_char_array(arr, "%s%s%s%d\n", indent, "je ", "end", curr_end_id);
+
+    (*clause_id)++;
+    (*end_id)++;
+
+    generate_statement(stmt->For.stat, arr, m, stack_index, clause_id, end_id, curr_end_id, curr_clause_id);
+
+    (*clause_id)++;
+    (*end_id)++;
+
+    print_to_char_array(arr, "%s%d:\n", "special", curr_clause_id);
+    generate_expression(stmt->For.e3, arr, m, clause_id, end_id);
+
+    print_to_char_array(arr, "%s%s%s%d\n", indent, "jmp ", "clause", curr_clause_id);
+    print_to_char_array(arr, "%s%d:\n", "end", curr_end_id);
+  } else if (stmt->kind == STAT_BREAK) {
+    print_to_char_array(arr, "%s%s%s%d\n", indent, "jmp ", "end", c_end_id);
+  } else if (stmt->kind == STAT_CONT) {
+    print_to_char_array(arr, "%s%s%s%d\n", indent, "jmp ", "special", c_clause_id);
   } else {
     StackIndexMap m1;
     map_copy(&m1, m);
 
-    generate_block(stmt->Compound, arr, &m1, stack_index, clause_id, end_id);
+    generate_block(stmt->Compound, arr, &m1, stack_index, clause_id, end_id, c_end_id, c_clause_id);
   }
 }
 
@@ -231,15 +348,15 @@ void generate_declaration(AST_Declaration *dec, CharArray *arr, StackIndexMap *m
   set_add(s, dec->name);
 }
 
-void generate_block(BlockArray *b, CharArray *arr, StackIndexMap *m, int *stack_index, int *clause_id, int *end_id) {
+void generate_block(BlockArray *b, CharArray *arr, StackIndexMap *m, int *stack_index, int *clause_id, int *end_id, int c_end_id, int c_clause_id) {
   static char *indent = "    ";
-  
+
   StringSet curr_scope;
   set_init(&curr_scope, 10);
   
   for (unsigned int i = 0; i < b->size; ++i) {
     if (b->array[i]->kind == BLOCK_STAT) {
-      generate_statement(b->array[i]->stat, arr, m, stack_index, clause_id, end_id);
+      generate_statement(b->array[i]->stat, arr, m, stack_index, clause_id, end_id, c_end_id, c_clause_id);
     } else {
       generate_declaration(b->array[i]->dec, arr, m, &curr_scope, stack_index, clause_id, end_id);
     }
@@ -272,7 +389,7 @@ int generate_function(AST_Program *prog, char *file_path, CharArray *arr, int id
   int clause_id = 1;
   int end_id = 1;
 
-  generate_block(func->body, arr, &m, &stack_index, &clause_id, &end_id);
+  generate_block(func->body, arr, &m, &stack_index, &clause_id, &end_id, -1, -1);
 
   print_to_char_array(arr, "%s%s\n", indent, "mov rsp, rbp");
   print_to_char_array(arr, "%s%s\n", indent, "pop rbp");

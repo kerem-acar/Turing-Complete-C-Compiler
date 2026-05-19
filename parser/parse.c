@@ -53,6 +53,21 @@ int is_unop(Parser *p) {
   return 0;
 }
 
+AST_Expression *create_placeholder() {
+  AST_Expression *exp = malloc(sizeof(AST_Expression));
+
+  exp->kind = EXP_CONSTANT;
+
+  char *literal = malloc(sizeof(char) * 2);
+
+  literal[0] = '1';
+  literal[1] = '\0';
+
+  exp->Constant = literal;
+
+  return exp;
+}
+
 AST_Expression *create_constant(Parser *p) {
   AST_Expression *exp = malloc(sizeof(AST_Expression));
   
@@ -363,7 +378,7 @@ AST_Statement *parse_statement(Parser *p) {
       stat->ForDecl.dec = parse_declaration(p);
 
       if (match_token(p, TOK_SEMICOL)) {
-        stat->ForDecl.e1 = NULL;
+        stat->ForDecl.e1 = create_placeholder();
       } else {
         stat->ForDecl.e1 = parse_expression(p);
 
@@ -397,7 +412,7 @@ AST_Statement *parse_statement(Parser *p) {
       }
 
       if (match_token(p, TOK_SEMICOL)) {
-        stat->For.e2 = NULL;
+        stat->For.e2 = create_placeholder();
       } else {
         stat->For.e2 = parse_expression(p);
 
