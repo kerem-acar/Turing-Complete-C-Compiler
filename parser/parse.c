@@ -41,6 +41,13 @@ int match_token(Parser *p, TOK kind) {
   return 1;
 }
 
+
+void expect_token(Parser *p, TOK kind) {
+  if (!match_token(p, kind)) {
+    assert(0);
+  }
+}
+
 int is_unop(Parser *p) {
   switch(get_token(p).kind) {
   case TOK_LOGNEG:
@@ -135,9 +142,7 @@ AST_Expression *parse_factor(Parser *p) {
   if (match_token(p, TOK_LPAREN)) {
     exp = parse_expression(p);
 
-    if (!match_token(p, TOK_RPAREN)) {
-      assert(0);
-    }
+    expect_token(p, TOK_RPAREN);
   } else if (is_unop(p)) {
     exp = create_unop(p);
     advance(p);
@@ -277,9 +282,7 @@ AST_Expression *parse_conditional_expression(Parser *p) {
   if (match_token(p, TOK_QMARK)) {
     e2 = parse_expression(p);
     
-    if (!match_token(p, TOK_COLON)) {
-      assert(0);
-    }
+    expect_token(p, TOK_COLON);
 
     e3 = parse_conditional_expression(p);
 
@@ -296,9 +299,7 @@ AST_Expression *parse_expression(Parser *p) {
     exp = create_assignment(p);
     advance(p);
 
-    if (!match_token(p, TOK_ASSIGN)) {
-      assert(0);
-    }
+    expect_token(p, TOK_ASSIGN);
 
     exp->Assign.exp = parse_expression(p);
   } else {
@@ -307,6 +308,7 @@ AST_Expression *parse_expression(Parser *p) {
 
   return exp;
 }
+
 AST_Declaration *parse_declaration(Parser *p);
 int parse_block_item(Parser *p, BlockArray *arr);
 
@@ -317,21 +319,15 @@ AST_Statement *parse_statement(Parser *p) {
     stat->kind = STAT_RETURN;
     stat->Return = parse_expression(p);
 
-    if (!match_token(p, TOK_SEMICOL)) {
-      assert(0);
-    }
+    expect_token(p, TOK_SEMICOL);
   } else if (match_token(p, TOK_IFKEY)) {
     stat->kind = STAT_IF;
 
-    if (!match_token(p, TOK_LPAREN)) {
-      assert(0);
-    }
+    expect_token(p, TOK_LPAREN);
 
     stat->If.exp = parse_expression(p);
 
-    if (!match_token(p, TOK_RPAREN)) {
-      assert(0);
-    }
+    expect_token(p, TOK_RPAREN);
 
     if (!compare_kind(p, TOK_LCURLY)) {
       assert(0);
@@ -364,13 +360,9 @@ AST_Statement *parse_statement(Parser *p) {
       }
     }
 
-    if (!match_token(p, TOK_RCURLY)) {
-      assert(0);
-    }
+    expect_token(p, TOK_RCURLY);
   } else if (match_token(p, TOK_FORKEY)) {
-    if (!match_token(p, TOK_LPAREN)) {
-      assert(0);
-    }
+    expect_token(p, TOK_LPAREN);
 
     if (compare_kind(p, TOK_INTKEY)) {
       stat->kind = STAT_FORDEC;
@@ -382,9 +374,7 @@ AST_Statement *parse_statement(Parser *p) {
       } else {
         stat->ForDecl.e1 = parse_expression(p);
 
-        if (!match_token(p, TOK_SEMICOL)) {
-          assert(0);
-        }
+        expect_token(p, TOK_SEMICOL);
       }
 
       if (match_token(p, TOK_RPAREN)) {
@@ -392,9 +382,7 @@ AST_Statement *parse_statement(Parser *p) {
       } else {
         stat->ForDecl.e2 = parse_expression(p);
 
-        if (!match_token(p, TOK_RPAREN)) {
-          assert(0);
-        }
+        expect_token(p, TOK_RPAREN);
       }
 
       stat->ForDecl.stat = parse_statement(p);
@@ -406,9 +394,7 @@ AST_Statement *parse_statement(Parser *p) {
       } else {
         stat->For.e1 = parse_expression(p);
 
-        if (!match_token(p, TOK_SEMICOL)) {
-          assert(0);
-        }
+        expect_token(p, TOK_SEMICOL);
       }
 
       if (match_token(p, TOK_SEMICOL)) {
@@ -416,9 +402,7 @@ AST_Statement *parse_statement(Parser *p) {
       } else {
         stat->For.e2 = parse_expression(p);
 
-        if (!match_token(p, TOK_SEMICOL)) {
-          assert(0);
-        }
+        expect_token(p, TOK_SEMICOL);
       }
 
       if (match_token(p, TOK_RPAREN)) {
@@ -426,9 +410,7 @@ AST_Statement *parse_statement(Parser *p) {
       } else {
         stat->For.e3 = parse_expression(p);
 
-        if (!match_token(p, TOK_RPAREN)) {
-          assert(0);
-        }
+        expect_token(p, TOK_RPAREN);
       }
 
       stat->For.stat = parse_statement(p);
@@ -436,27 +418,19 @@ AST_Statement *parse_statement(Parser *p) {
   } else if (match_token(p, TOK_BREAKKEY)) {
     stat->kind = STAT_BREAK;
 
-    if (!match_token(p, TOK_SEMICOL)) {
-      assert(0);
-    }
+    expect_token(p, TOK_SEMICOL);
   } else if (match_token(p, TOK_CONTKEY)) {
     stat->kind = STAT_CONT;
 
-    if (!match_token(p, TOK_SEMICOL)) {
-      assert(0);
-    }
+    expect_token(p, TOK_SEMICOL);
   } else if (match_token(p, TOK_WHILEKEY)) {
     stat->kind = STAT_WHILE;
     
-    if (!match_token(p, TOK_LPAREN)) {
-      assert(0);
-    }
+    expect_token(p, TOK_LPAREN);
 
     stat->While.exp = parse_expression(p);
 
-    if (!match_token(p, TOK_RPAREN)) {
-      assert(0);
-    }
+    expect_token(p, TOK_RPAREN);
 
     stat->While.stat = parse_statement(p);
   } else if (match_token(p, TOK_DOKEY)) {
@@ -464,23 +438,15 @@ AST_Statement *parse_statement(Parser *p) {
 
     stat->Do.stat = parse_statement(p);
 
-    if (!match_token(p, TOK_WHILEKEY)) {
-      assert(0);
-    }
+    expect_token(p, TOK_WHILEKEY);
 
-    if (!match_token(p, TOK_LPAREN)) {
-      assert(0);
-    }
+    expect_token(p, TOK_LPAREN);
 
     stat->Do.exp = parse_expression(p);
 
-    if (!match_token(p, TOK_RPAREN)) {
-      assert(0);
-    }
+    expect_token(p, TOK_RPAREN);
 
-    if (!match_token(p, TOK_SEMICOL)) {
-      assert(0);
-    }
+    expect_token(p, TOK_SEMICOL);
   } else {
     stat->kind = STAT_EXP;
 
@@ -489,9 +455,7 @@ AST_Statement *parse_statement(Parser *p) {
     } else {
       stat->Expression = parse_expression(p);
       
-      if (!match_token(p, TOK_SEMICOL)) {
-        assert(0);
-      }
+      expect_token(p, TOK_SEMICOL);
     }
   }
 
@@ -515,9 +479,7 @@ AST_Declaration *parse_declaration(Parser *p) {
       dec->optional_exp = NULL;
     }
 
-    if (!match_token(p, TOK_SEMICOL)) {
-      assert(0);
-    }
+    expect_token(p, TOK_SEMICOL);
   } else {
     assert(0);
   }
