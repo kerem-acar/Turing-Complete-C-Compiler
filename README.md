@@ -8,19 +8,19 @@ To use the compiler, paste the C code you want to compile into the input.c file 
 
 ## Supported Features
 - Types: int
-- Unary Operators: !, -, ~, 
-- Binary Operators: +, -, *, /
-- Relational Operators: ==, !=, <, <=, >, >=
-- Logical Operators: &&, ||
-- Assignment Operators: =
-- Ternary Operator: ?
+- Unary Operators: ```!```, ```-```, ```~``` 
+- Binary Operators: ```+```, ```-```, ```*```, ```/```
+- Relational Operators: ```==```, ```!=```, ```<```, ```<=```, ```>```, ```>=```
+- Logical Operators: ```&&```, ```||```
+- Assignment Operators: ```=```
+- Ternary Operator: ```?``
 - If/Else If/Else Statements
 - Return Statements
 - For Loops
 - While Loops
 - Do-While Loops
 - Local Variables
-- Functions: only main
+- Functions: only ```main```
 
 ## Motivation
-The primary purpose of this project was to learn about compilers and gain foundational experience in compiler development. I hope this project can serve as a reference point to others starting their journey in compilers and provide a high-level understanding of how they work under the hood to those unfamiliar with them.
+The primary purpose of this project was to learn about compilers and gain foundational experience in compiler development. I hope this project can serve as a reference point to others starting their journey in compilers and provide a high-level understanding of how compilers work under the hood to those unfamiliar with them.
