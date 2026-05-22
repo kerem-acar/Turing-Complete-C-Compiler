@@ -1,1 +1,0 @@
-cl %1/tests.c /Zi
