@@ -14,7 +14,7 @@ To use the compiler, paste the C code you want to compile into the input.c file 
 - Logical Operators: ```&&```, ```||```
 - Assignment Operators: ```=```
 - Ternary Operator: ```?```
-- If/Else
+- If/Else Statements
 - Return Statements
 - For Loops
 - While Loops
